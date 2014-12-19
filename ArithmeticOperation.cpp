@@ -34,7 +34,7 @@ bool ArithmeticOperation::locallySemanticCheck()
         Node::ErrorReport(MISSING_OPERAND_ERROR);
 	return false;
     }
-    // Check type of two operands is equal and the type is integer.
+    // Check whether type of two operands is equal and the type is integer.
     if((children[0] -> GetType() != children[1] -> GetType()) || (children[0] -> GetType() != INTEGER_T))
     {
         Node::ErrorReport(WRONG_TYPE_ERROR);
