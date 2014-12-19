@@ -2,7 +2,8 @@
 
 enum Type_t
 {
-    UNDEFINED;
-    INTEGER_T;
+    UNDEFINED,
+    INTEGER_T, // +, -, *
+    BOOL_T, // <
     
 }
