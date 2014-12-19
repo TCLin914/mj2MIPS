@@ -6,4 +6,4 @@ enum Type_t
     INTEGER_T, // +, -, *
     BOOL_T, // <
     
-}
+};
