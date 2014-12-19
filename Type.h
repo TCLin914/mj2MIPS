@@ -3,5 +3,6 @@
 enum Type_t
 {
     UNDEFINED;
+    INTEGER_T;
     
 }
