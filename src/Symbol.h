@@ -8,7 +8,7 @@
 
 using namespace std;
 
-// class SymbolTable;
+class SymbolTable;
 
 class Symbol
 {

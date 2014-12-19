@@ -5,12 +5,12 @@
 
 using namespace std;
 
-// class Symbol;
+class Symbol;
 
 class SymbolTable
 {
 public:
-    bool Insert(Symbol*)
+    bool Insert(Symbol*);
     bool INsert(vector<Symbol*>*);
     Symbol* GetSymbol(int);
     Symbol* GetSymbol(string);
@@ -20,5 +20,5 @@ private:
     vector<Symbol*> symbols;
     static const char DUPLICATED_SYMBOL_ERROR[];
 };
-bool InsertInto(Symble*, Symble*);
+bool InsertInto(SymbolTable*, SymbolTable*);
 bool Initialize(SymbolTable*);
