@@ -16,7 +16,7 @@ void Not::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 }
 void Not::Accept(Visitor* visitor)
 {
-    visitor->Visit(this);
+    visitor -> Visit(this);
 }
 bool Not::SemanticCheck()
 {
@@ -35,6 +35,6 @@ bool Not::SemanticCheck()
 }
 bool Not::Initialize()
 {
-	type = BOOL_T;
-	return UnaryNode::Initialize();
+    type = BOOL_T;
+    return UnaryNode::Initialize();
 }
