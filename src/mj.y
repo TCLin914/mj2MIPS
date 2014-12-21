@@ -6,8 +6,9 @@
 #include <vector>
 #include <string>
 #include "stdafx.h"
-#include "Node.h"
+#include "Node.h" 	
 #include "OpCode.h"
+#include "Type.h"
 // Binary node
 #include "Add.h"
 #include "Subtract.h"
@@ -15,8 +16,12 @@
 #include "And.h" 
 #include "LessThan.h"
 #include "Assignment.h"
+#include "ClassDeclarationList.h"
+#include "MethodDeclarationList.h"
+#include "StatementList.h"
 // Unary node
 #include "Not.h" 
+#include "Println.h"
 // Ternary node
 #include "IfStatement.h"
 #include "WhileStatement.h"
@@ -34,6 +39,11 @@ extern int yylineno;
 
 int yylex(void);
 void yyerror(char *s);
+
+SymbolTable yySymbolTable = SymbolTable();
+Node* yyHeader = NULL;
+
+vector<Symbol*> SetAllType(Symbol*, vector<Symblo*>*);
 %}
 
 %token Class
@@ -81,12 +91,12 @@ Goal
     ;
 
 MainClass
-    :   Class Identifier '{' Public Static Void Main '(' String '[' ']' Identifier ')' '{' Statement '}' '}'
+    :   Class Identifier '{' Public Static Void Main '(' String '[' ']' Identifier ')' '{' Statement '}' '}' 
     ;
 
 ClassDeclarationList
-    :   ClassDeclaration ClassDeclarationList
-    |   /* Empty */
+    :   ClassDeclaration ClassDeclarationList {$$ = new ClassDeclarationList($1, $2);}
+    |   {$$ = NULL;}
     ;
 
 ClassDeclaration
@@ -97,48 +107,74 @@ ClassDeclaration
     ;
 
 VarDeclarationList
-    :   VarDeclaration
-    |   VarDeclarationList VarDeclaration
-    ;
+    :   VarDeclaration 
+        {
+	    SymbleTable* varSymbolTable = new SymbolTable();
+	    yyIntegratedSymbolTable &= varSymbolTable -> Insert($1);  /* SymbleTable::Insert(Symbol* symbol) */
+	    $$ = varSymbolTable;
+	}
+    |   VarDeclarationList VarDeclaration 
+        {
+	    SymbleTable* varSymbolTable = $1;
+            yyIntegratedSymbolTable &= varSymbolTable -> Insert($2);  
+	    $$ = varSymbolTable;
+	}
+    ;	
 
 VarDeclaration
-    :   Type Identifier ';'
+    :   Type Identifier ';' {$$ = new Symbol($2, $1, line_no);}  /* Symbol::Symbol(string id, Type_t type, int declaredLine) */
     ;
 
 MethodDeclarationList
-    :   MethodDeclaration MethodDeclarationList
-    |   /* Empty */
+    :   MethodDeclaration MethodDeclarationList {$$ = new MethodDeclarationList($1, $2);}
+    |   {$$ = NULL;}
     ;
 
 MethodDeclaration
     :   Public Type Identifier '(' ParameterList ')' '{' VarDeclarationList StatementList Return Expression ';' '}'
+        {
+            yyIntegratedSymbolTable &= ($8) -> Insert(new Symbol($3, $2, line_no)); // Insert symbol(string method_name, Type_t return_type, int declaredLine) to VarDeclarationList(SymbolTable)
+            yyIntegratedSymbolTable &= ($8) -> Insert($5); // Insert vector<Symbol*>* to VarDeclarationList(symbolTable)
+            
+            $$ = MethodDeclaration($3, $9); // (Indentifier, StatementList)
+	}
     |   Public Type Identifier '(' ParameterList ')' '{' StatementList Return Expression ';' '}'
     ;
 
 ParameterList
-    :   Type Identifier
-    |   Type Identifier ',' ParameterList
-    |   /* Empty */
+    :   Type Identifier 
+        {
+	    vector<Symbol*>* para = new vector<Symbol*>();
+	    (*para).push_back(new Symbol($2, $1, line_no);
+	    $$ = para;
+	} 
+    |   Type Identifier ',' ParameterList 
+        {
+            vector<Symbol*>* para = $4;
+	    (*para).push_back(new Symbol($2, $1, line_no);
+	    $$ = para;
+	}
+    |   {$$ = NULL;}
     ;
 
 Type
     :   Integer '[' ']'
-    |   Boolean
-    |   Integer
-    |   Identifier
+    |   Boolean {$$ = BOOL_T}  /* {$$ = new Symbol("", BOOL_T);} */
+    |   Integer {$$ = INTEGER_T}  /* {$$ = new Symbol("", INTEGER_T);} */
+    |   Identifier // TODO
     ;
 
 StatementList
-    :   Statement StatementList
-    |   /* Empty */
+    :   Statement StatementList {$$ = new StatementList($1, $2);}
+    |   {$$ = NULL;}	
     ;
 
 Statement
-    :   '{' StatementList '}'
-    |   If '(' Expression ')' Statement Else Statement
-    |   While '(' Expression ')' Statement
-    |   Println '(' Expression ')' ';'
-    |   Identifier '=' Expression ';'
+    :   '{' StatementList '}' {$$ = $2;}
+    |   If '(' Expression ')' Statement Else Statement {$$ = new IfStatement($3, $5, $7);}
+    |   While '(' Expression ')' Statement {$$ = new WhileStatement($3, $5);}
+    |   Println '(' Expression ')' ';' {$$ = new Println($3);}
+    |   Identifier '=' Expression ';' {$$ = new Assingment($1, $3);}
     |   Identifier '[' Expression ']' '=' Expression ';'
     ;
 
@@ -157,15 +193,15 @@ Expression
     |   Expression '[' Expression ']'
     |   Expression '.' ArrayLength
     |   Expression '.' Identifier '(' ExpressionList ')'
-    |   Number
-    |   True
+    |   Number {$$ = $1;}
+    |   True 
     |   False
-    |   Identifier
+    |   Identifier 
     |   This
     |   New Integer '[' Expression ']'
     |   New Identifier '(' ')'
-    |   '!' Expression
-    |   '(' Expression ')'
+    |   '!' Expression {$$ = new Not($2);}
+    |   '(' Expression ')' {$$ = $2;}
     ;
 
 Identifier
@@ -179,6 +215,8 @@ vector<Symbol*>* SetAllType(Symbol* type, vector<Symbol*>* symbols)
     {
         (*symbols)[i] -> type = type -> type;
 	(*symbols)[i] -> dimensions = type -> dimensions;
+    }
+    return symbols;
 }
 void yyerror(char *s) {
     fprintf(stderr, "line %d: %s\n", yylineno, s);
