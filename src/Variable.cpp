@@ -12,25 +12,25 @@ const char Variable::INDEX_RANGE_ERROR[] = "The index value '%d' of '%s' is not 
 
 Variable::Variable(string id, Node* a): UnaryNode(a)
 {
-	this->id = id;
+    this->id = id;
 }
 void Variable::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 {
-	UnaryNode::SetSymbolTable(gSymTable, lSymTable);
+    UnaryNode::SetSymbolTable(gSymTable, lSymTable);
 }
 void Variable::Accept(Visitor* visitor)
 {
-    visitor->Visit(this);
+    visitor -> Visit(this);
 }
 bool Variable::SemanticCheck()
 {
-	bool result = UnaryNode::SemanticCheck();
-	Node* ptr = children[0];
-	if(varSymbol->dimensions.size() < Depth(children[0], ExpressionList::INDEX_OF_MORE))
-	{
+    bool result = UnaryNode::SemanticCheck();
+    Node* ptr = children[0];
+    if(varSymbol->dimensions.size() < Depth(children[0], ExpressionList::INDEX_OF_MORE))
+    {
 		Node::ErrorReport(DIMENSION_ERROR, id.c_str());
 		return false;
-	}
+    }
 	for(int i = 0; ptr != NULL; ptr = ptr->GetChild(ExpressionList::INDEX_OF_MORE), i++)
 	{
 		if(ptr->GetType() != INTEGER_T)
@@ -72,7 +72,7 @@ bool Variable::Initialize()
 }
 bool Variable::IsAssignable()
 {
-	return true;
+    return true;
 }
 bool Variable::IsLocalVariable()
 {
