@@ -7,7 +7,7 @@ PrintlnStatement::PrintlnStatement(Node* a) : UnaryNode(a)
 {
 
 }
-void PrintlnStatement::SetSetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
+void PrintlnStatement::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 {
     UnaryNode::SetSymbolTable(gSymTable, lSymTable);
 }

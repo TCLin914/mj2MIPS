@@ -1,12 +1,12 @@
 #include <cstdlib>
 #include "stdafx.h"
 #include "Node.h"
-#include "RelationOperation.h"
+#include "RelationalOperation.h"
 
 const char RelationalOperation::MISSING_OPERAND_ERROR[] = "The arithmetic operator lose (an) operand(s)";
 const char RelationalOperation::WRONG_TYPE_ERROR[] = "Wrong element type";
 
-RelationalOperation::RelationalOperation(Node* a, Node* b) : Binary(a, b)
+RelationalOperation::RelationalOperation(Node* a, Node* b) : BinaryNode(a, b)
 {
 
 }
@@ -30,12 +30,12 @@ bool RelationalOperation::SemanticCheck()
     }
     return result;
 }
-bool RelationOperation::Initialize()
+bool RelationalOperation::Initialize()
 {
     type = BOOL_T;
     return BinaryNode::Initialize();
 }
-bool RelationOperation::IsEvaluable()
+bool RelationalOperation::IsEvaluable()
 {
     if(children[0] != NULL && children[1] != NULL)
         return children[0] -> IsEvaluable() && children[1] -> IsEvaluable();

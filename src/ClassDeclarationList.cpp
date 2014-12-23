@@ -3,13 +3,13 @@
 #include "ClassDeclarationList.h"
 #include <string>
 
-ClassDeclarationList::ClassList(Node* a, Node* b) : BinaryNode(a, b)
+ClassDeclarationList::ClassDeclarationList(Node* a, Node* b) : BinaryNode(a, b)
 {
 
 }
 void ClassDeclarationList::SetSymbleTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 {
-    BinaryNode::SetSymbleTable(gSymTable, lSymTable);
+    BinaryNode::SetSymbolTable(gSymTable, lSymTable);
 }
 void ClassDeclarationList::Accept(Visitor* visitor)
 {

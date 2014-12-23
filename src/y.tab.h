@@ -45,54 +45,55 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    Class = 258,
-    Public = 259,
-    Static = 260,
-    Void = 261,
-    Main = 262,
-    String = 263,
-    Extends = 264,
-    Return = 265,
-    Integer = 266,
-    Boolean = 267,
-    If = 268,
-    Else = 269,
-    While = 270,
-    Println = 271,
-    ArrayLength = 272,
-    True = 273,
-    False = 274,
-    This = 275,
-    And = 276,
-    New = 277,
-    Id = 278,
-    Number = 279
+    Class = 1,
+    Public = 2,
+    Static = 3,
+    Void = 4,
+    Main = 5,
+    String = 6,
+    Extends = 7,
+    Return = 8,
+    Integer = 9,
+    Boolean = 10,
+    If = 11,
+    Else = 12,
+    While = 13,
+    Println = 14,
+    ArrayLength = 15,
+    True = 16,
+    False = 17,
+    This = 18,
+    And = 19,
+    New = 20,
+    Id = 21,
+    Number = 22
   };
 #endif
 /* Tokens.  */
-#define Class 258
-#define Public 259
-#define Static 260
-#define Void 261
-#define Main 262
-#define String 263
-#define Extends 264
-#define Return 265
-#define Integer 266
-#define Boolean 267
-#define If 268
-#define Else 269
-#define While 270
-#define Println 271
-#define ArrayLength 272
-#define True 273
-#define False 274
-#define This 275
-#define And 276
-#define New 277
-#define Id 278
-#define Number 279
-
+/*
+#define Class 1
+#define Public 2
+#define Static 3
+#define Void 4
+#define Main 5
+#define String 6
+#define Extends 7
+#define Return 8
+#define Integer 9
+#define Boolean 10
+#define If 11
+#define Else 12
+#define While 13
+#define Println 14
+#define ArrayLength 15
+#define True 16
+#define False 17
+#define This 18
+#define And 19
+#define New 20
+#define Id 21
+#define Number 22
+*/
 /* Value type.  */
 
 

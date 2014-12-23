@@ -8,7 +8,7 @@ Add::Add(Node* a, Node* b) : ArithmeticOperation(a, b)
 }
 int Add::AGetIntValue()
 {
-    return children[0] -> GetIntValue() + children -> GetIntValue();
+    return children[0] -> GetIntValue() + children[1] -> GetIntValue();
 }
 void Add::Accept(Visitor* visitor)
 {

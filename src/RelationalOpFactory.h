@@ -1,6 +1,6 @@
 #pragma once
 #include "LessThan.h"
-#include "AND.h"
+#include "And.h"
 #include "OpCode.h"
 
 using namespace std;

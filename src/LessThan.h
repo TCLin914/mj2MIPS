@@ -3,7 +3,7 @@
 
 using namespace std;
 
-class LessThan : public RelationalOperator
+class LessThan : public RelationalOperation
 {
 public:
     LessThan(Node*, Node*);

@@ -11,7 +11,7 @@ BinaryNode::BinaryNode(Node* a, Node* b) : Node()
 }
 void BinaryNode::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 {
-    Node::SetSymbleTable(gSymTable, lSymTable);
+    Node::SetSymbolTable(gSymTable, lSymTable);
     if(children[0] != NULL)
         children[0] -> SetSymbolTable(gSymTable, lSymTable);
     if(children[1] != NULL)

@@ -1,5 +1,5 @@
 #pragma once
-#include "ArithmeticOperator.h"
+#include "ArithmeticOperation.h"
 
 using namespace std;
 

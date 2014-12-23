@@ -10,7 +10,7 @@ int Multiply::AGetIntValue()
 {
     return children[0] -> GetIntValue() * children[1] -> GetIntValue();
 }
-void Multiply::Accept(Visitor visitor)
+void Multiply::Accept(Visitor* visitor)
 {
     visitor -> Visit(this);
 }

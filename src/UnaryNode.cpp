@@ -2,7 +2,7 @@
 #include "Node.h"
 #include "UnaryNode.h"
 
-UnaryNode::UnaryNode(Node* a) : node()
+UnaryNode::UnaryNode(Node* a) : Node()
 {
     children.push_back(a);
 }

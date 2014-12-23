@@ -3,7 +3,7 @@
 
 using namespace std;
 
-class And : public RelationalOperator
+class And : public RelationalOperation
 {
 public:
     And(Node*, Node*);

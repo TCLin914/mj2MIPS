@@ -7,18 +7,15 @@ using namespace std;
 class MethodDeclaration : public BinaryNode
 {
 public:
-    MethodDeclaration(string, Node*, Node*);
+    MethodDeclaration(string, Node*, Node*); // (method name, statementList, (return) Expression)
     void SetSymbolTable(SymbolTable*, SymbolTable*);
     void Accept(Visitor*);
     bool SemanticCheck();
     bool Initialize();
     Symbol* GetMethodSymbol();
-
-    void SetSymbol(Symbol*);
-    Symbol* GetSymbol;
+        
 private:
     Symbol* methodEntry;
-    string id;
-    Symbol* symbol;
+    string id;   
     static const char MISSING_METHOD_ERROR[];
 };

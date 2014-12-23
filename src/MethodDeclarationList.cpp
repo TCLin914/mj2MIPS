@@ -23,3 +23,4 @@ bool MethodDeclarationList::Initialize()
 {
     return BinaryNode::Initialize();
 }
+

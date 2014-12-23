@@ -16,6 +16,14 @@ class Not;
 class Println;
 class IfStatement;
 class WhileStatement;
+class MainClass;
+class Variable;
+class PrintlnStatement;
+class Goal;
+class ExpressionList;
+class ConstantInteger;
+class ConstantBoolean;
+
 
 using namespace std;
 
@@ -36,7 +44,17 @@ public:
     virtual void Visit(Println*) = 0;
     virtual void Visit(IfStatement*) = 0;
     virtual void Visit(WhileStatement*) = 0;
-
+    virtual void Visit(MainClass*) = 0;
+    virtual void Visit(Variable*) = 0;
+    virtual void Visit(PrintlnStatement*) = 0;
+    virtual void Visit(Goal*) = 0;
+    virtual void Visit(ExpressionList*) = 0;
+    virtual void Visit(ConstantInteger*) = 0;
+    virtual void Visit(ConstantBoolean*) = 0;
+    virtual void Visit(ClassDeclaration*) = 0;
+    virtual void Visit(ArrayAssignment*) = 0;
+    
+    
     virtual void SetSymbolTable(SymbolTable*);
 protected:
     SymbolTable* symbolTable;

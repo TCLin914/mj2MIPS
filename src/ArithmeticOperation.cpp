@@ -12,11 +12,11 @@ ArithmeticOperation::ArithmeticOperation(Node* a, Node* b) : BinaryNode(a, b)
 }
 void ArithmeticOperation::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 {
-    BinaryNode::SetSymbolTable(gSymTable, lSymble);
+    BinaryNode::SetSymbolTable(gSymTable, lSymTable);
 }
 bool ArithmeticOperation::SemanticCheck()
 {
-    return BinaryNode::SemanticCheck() & locallySematicCheck();
+    return BinaryNode::SemanticCheck() & locallySemanticCheck();
 }
 bool ArithmeticOperation::Initialize()
 {

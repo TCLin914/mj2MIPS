@@ -5,7 +5,7 @@
 
 const char MethodDeclaration::MISSING_METHOD_ERROR[] = "The method '%s' got error.";
 
-MethodDeclaration::MethodDeclaration(string id, Node* a, Node* b) : UnaryNode(a, b)
+MethodDeclaration::MethodDeclaration(string id, Node* a, Node* b) : BinaryNode(a, b)
 {
     this -> id = id;
 }
@@ -14,15 +14,7 @@ void MethodDeclaration::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSym
     methodEntry = gSymTable -> GetSymbol(id);
     if(methodEntry == NULL)
 	Node::ErrorReport(MISSING_METHOD_ERROR, id.c_str());
-    UnaryNode::SetSymbolTable(gSymTable, methodEntry -> symbolTable);
-}
-void MethodDeclaration::SetSymbol(Symbol* symbol)
-{
-    this -> symbol = symbol;
-}
-Symbol* MethodDeclaration::GetSymbol()
-{
-    return symbol;
+    BinaryNode::SetSymbolTable(gSymTable, methodEntry -> symbolTable);
 }
 void MethodDeclaration::Accept(Visitor* visitor)
 {
@@ -30,11 +22,11 @@ void MethodDeclaration::Accept(Visitor* visitor)
 }
 bool MethodDeclaration::SemanticCheck()
 {
-    return UnaryNode::SemanticCheck();
+    return BinaryNode::SemanticCheck();
 }
 bool MethodDeclaration::Initialize()
 {
-    return UnaryNode::Initialize();
+    return BinaryNode::Initialize();
 }
 Symbol* MethodDeclaration::GetMethodSymbol()
 {

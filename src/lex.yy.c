@@ -544,11 +544,16 @@ char *yytext;
 #line 1 "mj.l"
 #line 2 "mj.l"
 #include <stdio.h>
-#include "y.tab.h"
+// #include "y.tab.h"
 #include "mj_tab.h"
+int line_no;
 void count();
-// int yylineno;
-#line 552 "lex.yy.c"
+
+extern void yyerror(char const *s);
+extern YYSTYPE yylval;
+#define yylex yylexical
+char const *unknown = "Unknown character";
+#line 557 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -735,9 +740,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 13 "mj.l"
+#line 18 "mj.l"
 
-#line 741 "lex.yy.c"
+#line 746 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -822,224 +827,224 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 14 "mj.l"
-{ count(); return If; }
+#line 19 "mj.l"
+{ count(); return 	If; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 15 "mj.l"
+#line 20 "mj.l"
 { count(); return Else; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 16 "mj.l"
+#line 21 "mj.l"
 { count(); return While; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 17 "mj.l"
+#line 22 "mj.l"
 { count(); return Class; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 18 "mj.l"
+#line 23 "mj.l"
 { count(); return Extends; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 19 "mj.l"
+#line 24 "mj.l"
 { count(); return Public; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 20 "mj.l"
+#line 25 "mj.l"
 { count(); return Static; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 21 "mj.l"
+#line 26 "mj.l"
 { count(); return Void; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 22 "mj.l"
+#line 27 "mj.l"
 { count(); return Boolean; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 23 "mj.l"
+#line 28 "mj.l"
 { count(); return Integer; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 24 "mj.l"
+#line 29 "mj.l"
 { count(); return String; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 25 "mj.l"
+#line 30 "mj.l"
 { count(); return True; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 26 "mj.l"
+#line 31 "mj.l"
 { count(); return False; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 27 "mj.l"
+#line 32 "mj.l"
 { count(); return This; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 28 "mj.l"
+#line 33 "mj.l"
 { count(); return New; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 29 "mj.l"
+#line 34 "mj.l"
 { count(); return Println; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 30 "mj.l"
+#line 35 "mj.l"
 { count(); return Return; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 31 "mj.l"
+#line 36 "mj.l"
 { count(); return ArrayLength; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 32 "mj.l"
+#line 37 "mj.l"
 { count(); return Main; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 34 "mj.l"
+#line 39 "mj.l"
 { count(); return Id; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 35 "mj.l"
+#line 40 "mj.l"
 { count(); return Number; }
 	YY_BREAK
 /*\"(.|"\n")*\"                     { count(); return Text; }*/
 case 22:
 YY_RULE_SETUP
-#line 38 "mj.l"
+#line 43 "mj.l"
 { count(); return And; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 39 "mj.l"
+#line 44 "mj.l"
 { count(); return '<'; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 40 "mj.l"
+#line 45 "mj.l"
 { count(); return '+'; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 41 "mj.l"
+#line 46 "mj.l"
 { count(); return '-'; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 42 "mj.l"
+#line 47 "mj.l"
 { count(); return '*'; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 43 "mj.l"
+#line 48 "mj.l"
 { count(); return '!'; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 44 "mj.l"
+#line 49 "mj.l"
 { count(); return '='; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 45 "mj.l"
+#line 50 "mj.l"
 { count(); return '.'; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 47 "mj.l"
+#line 52 "mj.l"
 { count(); return '('; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 48 "mj.l"
+#line 53 "mj.l"
 { count(); return ')'; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 49 "mj.l"
+#line 54 "mj.l"
 { count(); return '['; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 50 "mj.l"
+#line 55 "mj.l"
 { count(); return ']'; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 51 "mj.l"
+#line 56 "mj.l"
 { count(); return '{'; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 52 "mj.l"
+#line 57 "mj.l"
 { count(); return '}'; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 53 "mj.l"
+#line 58 "mj.l"
 { count(); return ','; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 54 "mj.l"
+#line 59 "mj.l"
 { count(); return ';'; }
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 56 "mj.l"
+#line 61 "mj.l"
 { /* Comment */yylineno++; }
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 57 "mj.l"
+#line 62 "mj.l"
 { /* Comment */yylineno++; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 58 "mj.l"
+#line 63 "mj.l"
 { count(); }
 	YY_BREAK
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
-#line 59 "mj.l"
+#line 64 "mj.l"
 { count(); yylineno++; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 60 "mj.l"
-{/* yyerror("Unknown character"); */ }
+#line 65 "mj.l"
+{yyerror(unknown);}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 62 "mj.l"
+#line 67 "mj.l"
 ECHO;
 	YY_BREAK
-#line 1043 "lex.yy.c"
+#line 1048 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2037,7 +2042,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 62 "mj.l"
+#line 67 "mj.l"
 
 
 

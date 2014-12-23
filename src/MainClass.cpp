@@ -3,7 +3,7 @@
 #include "MainClass.h"
 #include <string>
 
-const char MainClass:MISSING_MAIN_CLASS_ERROR[] = "The class '%s' got error.";
+const char MainClass::MISSING_MAIN_CLASS_ERROR[] = "The class '%s' got error.";
 
 MainClass::MainClass(string id, Node* a) : UnaryNode(a)
 {
@@ -28,7 +28,7 @@ bool MainClass::Initialize()
 {
     return UnaryNode::Initialize();
 }
-Symbol* MainClass:GetMainClassSymbol()
+Symbol* MainClass::GetMainClassSymbol()
 {
     return mainclassEntry;
 }

@@ -11,5 +11,7 @@ public:
     void SetSymbolTable(SymbolTable*, SymbolTable*);
     void Accept(Visitor*);
     bool SemanticCheck();
-    bool Initialize();
+    bool Initialize();   
+private:
+   
 };

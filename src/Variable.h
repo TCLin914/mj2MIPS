@@ -7,7 +7,7 @@ using namespace std;
 class Variable : public UnaryNode
 {
 public:
-    Variable(string, Node*);	//(id, expressionList) //expressionList: [x1]...[xn]
+    Variable(string, Node*);	// (id, [])
     void SetSymbolTable(SymbolTable*, SymbolTable*);
     void Accept(Visitor*);
     bool SemanticCheck();

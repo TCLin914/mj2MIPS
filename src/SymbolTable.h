@@ -11,7 +11,7 @@ class SymbolTable
 {
 public:
     bool Insert(Symbol*);
-    bool INsert(vector<Symbol*>*);
+    bool Insert(vector<Symbol*>*);
     Symbol* GetSymbol(int);
     Symbol* GetSymbol(string);
     int Size();

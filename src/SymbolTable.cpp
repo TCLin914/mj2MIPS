@@ -10,7 +10,7 @@ bool SymbolTable::Insert(Symbol* symbol)
 {
     int rank = Rank(symbol -> id);
     if(rank < symbols.size())
-        if(strcmp(symbol -> id.c_str(), symbols[rand] -> id.c_str) == 0)
+        if(strcmp(symbol -> id.c_str(), symbols[rank] -> id.c_str()) == 0)
 	{
 	    printf(DUPLICATED_SYMBOL_ERROR, symbol -> id.c_str(), symbol -> declaredLine);
 	    return false;
@@ -35,7 +35,7 @@ Symbol* SymbolTable::GetSymbol(string id)
     int rank = Rank(id);
     if(rank < symbols.size())
         if(strcmp(id.c_str(), symbols[rank] -> id.c_str()) == 0)
-	    return symbols[rand];
+	    return symbols[rank];
     return NULL;
 }
 // Return a position of symboltable to insert symbol.
@@ -43,7 +43,7 @@ int SymbolTable::Rank(string id)
 {
     int left = 0, right = symbols.size() - 1;
     int rank = (left + right) / 2;
-    for(; leftfor(; left <= right; rank = (left + right + 1) / 2)
+    for(; left <= right; rank = (left + right + 1) / 2)
     {
         int cmpResult = 0;
         if((cmpResult = strcmp(id.c_str(), symbols[rank] -> id.c_str())) > 0)
@@ -60,7 +60,7 @@ int SymbolTable::Size()
     return symbols.size();
 }
 // Insert symbols from src symboltable to target symboltable
-bool InsertInto(SymbolTable* src, SymbolTable target)
+bool InsertInto(SymbolTable* src, SymbolTable* target)
 {
     bool result = true;
     int size = ((src != NULL) ? src -> Size() : 0);

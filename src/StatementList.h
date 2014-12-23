@@ -4,10 +4,10 @@
 
 using namespace std;
 
-class StatementList(Node*, Node*); // (Statement, StatementList)
+class StatementList : public BinaryNode
 {
 public:
-    StatementList(Node*, Node*);
+    StatementList(Node*, Node*); // (Statement, StatementList)
     void SetSymbolTable(SymbolTable*, SymbolTable*);
     void Accept(Visitor*);
     bool SemanticCheck();
