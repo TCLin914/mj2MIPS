@@ -1,8 +1,14 @@
 %{
 #include <stdio.h>
-#include "y.tab.h"
+// #include "y.tab.h"
+#include "mj_tab.h"
+int line_no;
 void count();
-int yylineno;
+
+extern void yyerror(char const *s);
+extern YYSTYPE yylval;
+#define yylex yylexical
+char const *unknown = "Unknown character";
 %}
 
 alpha                             [A-Za-z]
@@ -10,7 +16,7 @@ digit                             [0-9]
 alphanum                          ({alpha}|{digit})
 
 %%
-"if"                              { count(); return If; }
+"if"                              { count(); return 	If; }
 "else"                            { count(); return Else; }
 "while"                           { count(); return While; }
 "class"                           { count(); return Class; }
@@ -56,9 +62,10 @@ alphanum                          ({alpha}|{digit})
 "/*"(.|"\n")*"*\\"                { /* Comment */yylineno++; }
 [ \t\r]                           { count(); }
 \n                                { count(); yylineno++; }
-.                                 { yyerror("Unknown character"); }
+.                                 {yyerror(unknown);}
 
 %%
+
 int yywrap()
 {
     return 1;

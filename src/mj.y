@@ -10,6 +10,8 @@
 #include "OpCode.h"
 #include "Type.h"
 // Binary node
+#include "Goal.h"
+#include "MainClass.h"
 #include "Add.h"
 #include "Subtract.h"
 #include "Multiply.h"
@@ -18,13 +20,22 @@
 #include "Assignment.h"
 #include "ClassDeclarationList.h"
 #include "MethodDeclarationList.h"
+#include "MethodDeclaration.h"
 #include "StatementList.h"
+#include "ExpressionList.h"
 // Unary node
 #include "Not.h" 
-#include "Println.h"
+#include "PrintlnStatement.h"
+#include "Variable.h"
+#include "ClassDeclaration.h"
 // Ternary node
 #include "IfStatement.h"
 #include "WhileStatement.h"
+#include "ArrayAssignment.h"
+//Nullary node
+#include "ConstantInteger.h"
+#include "ConstantBoolean.h"
+
 // Factory 
 #include "ArithmeticOpFactory.h"
 #include "RelationalOpFactory.h"
@@ -32,42 +43,54 @@
 #include "Symbol.h"
 #include "SymbolTable.h"
 
+#include "mj_tab.h"
+// #include "YaccCompatible.h"
+
+using namespace std;
 
 extern char yytext[];
 extern int column;
-extern int yylineno;
+extern int line_no;
 
-int yylex(void);
-void yyerror(char *s);
+int yylexical();
+int yylex(void)
+{
+    return yylexical();
+}
+void yyerror(char const *s);
 
+// extern YYSTYPE yylval;
+
+bool yyIntegratedSymbolTable = true;
 SymbolTable yySymbolTable = SymbolTable();
 Node* yyHeader = NULL;
 
-vector<Symbol*> SetAllType(Symbol*, vector<Symblo*>*);
+vector<Symbol*>* SetAllType(Symbol*, vector<Symbol*>*);
+
 %}
 
-%token Class
-%token Public
-%token Static
-%token Void
-%token Main
-%token String
-%token Extend
-%token Return
-%token Integer
-%token Boolean
-%token If
-%token Else
-%token While
-%token Println
-%token ArrayLength
-%token True
-%token False
-%token This
-%token And
-%token New
-%token Id
-%token Number
+%token <tokenval> Class 1
+%token <tokenval> Public 2
+%token <tokenval> Static 3
+%token <tokenval> Void 4
+%token <tokenval> Main 5
+%token <tokenval> String 6
+%token <tokenval> Extends 7
+%token <tokenval> Return 8
+%token <tokenval> Integer 9
+%token <tokenval> Boolean 10
+%token <tokenval> If 11
+%token <tokenval> Else 12
+%token <tokenval> While 13
+%token <tokenval> Println 14
+%token <tokenval> ArrayLength 15 
+%token <tokenval> True 16
+%token <tokenval> False 17
+%token <tokenval> This 18
+%token <tokenval> And 19
+%token <tokenval> New 20
+%token <tokenstr> Id 21
+%token <tokenval> Number 22 
 
 %right '='
 %left '{'
@@ -82,16 +105,51 @@ vector<Symbol*> SetAllType(Symbol*, vector<Symblo*>*);
 %start Goal
 
 %type <node> Goal
-%type 
+%type <node> MainClass
+%type <symbol> Identifier
+%type <node> ClassDeclarationList
+%type <node> ClassDeclaration
+%type <symbolTable> VarDeclarationList
+%type <symbol> VarDeclaration
+%type <node> MethodDeclarationList
+%type <node> MethodDeclaration
+%type <symbolList> ParameterList
+%type <type_t> Type
+%type <node> StatementList
+%type <node> Statement
+%type <node> ExpressionList
+%type <node> Expression
+%type <node> variable
 
+/*
+%code requires
+{
+    #include "YaccCompatible.h"
+}
+%union {
+    int tokenval;
+    char* tokenstr;
+    OpCode_t opCode;
+    vector<Symbol*>* symbolList;
+    Symbol* symbol;
+    Type_t type_t;
+    SymbolTable* symbolTable;
+    Node* node;
+}
+*/
 
 %%
+
 Goal
-    :   MainClass ClassDeclarationList      { printf("OK\n"); }
+    :   MainClass ClassDeclarationList      
+        { 
+	    $$  = new Goal($1, $2);	
+	    printf("OK\n"); 	
+	}
     ;
 
 MainClass
-    :   Class Identifier '{' Public Static Void Main '(' String '[' ']' Identifier ')' '{' Statement '}' '}' 
+    :   Class Identifier '{' Public Static Void Main '(' String '[' ']' Identifier ')' '{' Statement '}' '}' {$$ = new MainClass($2 -> id, $15);} 
     ;
 
 ClassDeclarationList
@@ -100,68 +158,120 @@ ClassDeclarationList
     ;
 
 ClassDeclaration
-    :   Class Identifier '{' VarDeclarationList MethodDeclarationList '}'
-    |   Class Identifier '{' MethodDeclarationList '}'
-    |   Class Identifier Extends Identifier '{' VarDeclarationList MethodDeclarationList '}'
-    |   Class Identifier Extends Identifier '{' MethodDeclarationList '}'
+    :   Class Identifier '{' VarDeclarationList MethodDeclarationList '}' 
+        { 
+            Symbol* classSymbol = new Symbol($2 -> id, UNDEFINED, line_no);
+            yyIntegratedSymbolTable &= ($4) -> Insert(classSymbol);
+            yyIntegratedSymbolTable &= InsertInto($5 -> GetMethodsSymbolTable(), $4);
+            classSymbol -> symbolTable = $4;            
+            yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
+            $$ = new ClassDeclaration($2 -> id, $5); // (class name, MethodDeclarationList)
+        }
+    |   Class Identifier '{' MethodDeclarationList '}' 
+        {
+            Symbol* classSymbol = new Symbol($2 -> id, UNDEFINED, line_no);
+            yyIntegratedSymbolTable &= ($4 -> GetMethodsSymbolTable()) -> Insert(classSymbol);          
+            classSymbol -> symbolTable = $4 -> GetMethodsSymbolTable();            
+            yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
+            $$ = new ClassDeclaration($2 -> id, $4); // (class name, MethodDeclarationList)
+        }
+    |   Class Identifier Extends Identifier '{' VarDeclarationList MethodDeclarationList '}' 
+        {
+            Symbol* classSymbol = new Symbol($2 -> id, CLASS_T, line_no);
+            yyIntegratedSymbolTable &= ($6) -> Insert(classSymbol);
+            yyIntegratedSymbolTable &= InsertInto($7 -> GetMethodsSymbolTable(), $6);
+            yyIntegratedSymbolTable &= InsertInto((yySymbolTable.GetSymbol($4 -> id)) -> symbolTable, $6);
+            classSymbol -> symbolTable = $6;            
+            yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
+            $$ = new ClassDeclaration($2 -> id, $7); // (class name, MethodDeclarationList)   
+        }
+    |   Class Identifier Extends Identifier '{' MethodDeclarationList '}' 
+        { 
+            Symbol* classSymbol = new Symbol($2 -> id, CLASS_T, line_no);
+            yyIntegratedSymbolTable &= ($6 -> GetMethodsSymbolTable()) -> Insert(classSymbol);           
+            yyIntegratedSymbolTable &= InsertInto((yySymbolTable.GetSymbol($4 -> id)) -> symbolTable, $6 -> GetMethodsSymbolTable());
+            classSymbol -> symbolTable = $6 -> GetMethodsSymbolTable();            
+            yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
+            $$ = new ClassDeclaration($2 -> id, $6); // (class name, MethodDeclarationList)        
+        }
     ;
 
 VarDeclarationList
     :   VarDeclaration 
         {
-	    SymbleTable* varSymbolTable = new SymbolTable();
+	    SymbolTable* varSymbolTable = new SymbolTable();
 	    yyIntegratedSymbolTable &= varSymbolTable -> Insert($1);  /* SymbleTable::Insert(Symbol* symbol) */
 	    $$ = varSymbolTable;
 	}
     |   VarDeclarationList VarDeclaration 
         {
-	    SymbleTable* varSymbolTable = $1;
+	    SymbolTable* varSymbolTable = $1;
             yyIntegratedSymbolTable &= varSymbolTable -> Insert($2);  
 	    $$ = varSymbolTable;
 	}
     ;	
 
 VarDeclaration
-    :   Type Identifier ';' {$$ = new Symbol($2, $1, line_no);}  /* Symbol::Symbol(string id, Type_t type, int declaredLine) */
+    :   Type Identifier ';' {$$ = new Symbol($2 -> id, $1, line_no);}  /* Symbol::Symbol(string id, Type_t type, int declaredLine) */
     ;
 
 MethodDeclarationList
-    :   MethodDeclaration MethodDeclarationList {$$ = new MethodDeclarationList($1, $2);}
+    :   MethodDeclaration MethodDeclarationList 
+        {
+	    SymbolTable* symbolTable = $2 -> GetMethodsSymbolTable();
+            yyIntegratedSymbolTable &= symbolTable -> Insert($1 -> GetSymbol());
+	    MethodDeclarationList* methods = new MethodDeclarationList($1, $2);
+	    methods -> SetMethodsSymbolTable(symbolTable);
+	    $$ = methods;
+	}
     |   {$$ = NULL;}
     ;
 
 MethodDeclaration
     :   Public Type Identifier '(' ParameterList ')' '{' VarDeclarationList StatementList Return Expression ';' '}'
         {
-            yyIntegratedSymbolTable &= ($8) -> Insert(new Symbol($3, $2, line_no)); // Insert symbol(string method_name, Type_t return_type, int declaredLine) to VarDeclarationList(SymbolTable)
+	    Symbol* methodSymbol = new Symbol($3 -> id, $2, line_no);
+            yyIntegratedSymbolTable &= ($8) -> Insert(methodSymbol); // Insert symbol(string method_name, Type_t return_type, int declaredLine) to VarDeclarationList(SymbolTable)
             yyIntegratedSymbolTable &= ($8) -> Insert($5); // Insert vector<Symbol*>* to VarDeclarationList(symbolTable)
-            
-            $$ = MethodDeclaration($3, $9); // (Indentifier, StatementList)
+            MethodDeclaration* method = new MethodDeclaration($3 -> id, $9, $11); // (Indentifier, StatementList, Expression)
+	    methodSymbol -> symbolTable = $8;
+	    method -> SetSymbol(methodSymbol);
+	    $$ = method;
 	}
     |   Public Type Identifier '(' ParameterList ')' '{' StatementList Return Expression ';' '}'
+        {
+	    Symbol* methodSymbol = new Symbol($3 -> id, $2, line_no);
+	    SymbolTable* symbolTable = new SymbolTable();
+            yyIntegratedSymbolTable &= symbolTable -> Insert(methodSymbol);
+	    yyIntegratedSymbolTable &= symbolTable -> Insert($5);
+            MethodDeclaration* method = new MethodDeclaration($3 -> id, $8, $10);
+	    methodSymbol -> symbolTable = symbolTable;
+	    method -> SetSymbol(methodSymbol);
+	    $$ = method;
+	}
     ;
 
 ParameterList
     :   Type Identifier 
         {
 	    vector<Symbol*>* para = new vector<Symbol*>();
-	    (*para).push_back(new Symbol($2, $1, line_no);
+	    (*para).push_back(new Symbol($2 -> id, $1, line_no));
 	    $$ = para;
 	} 
     |   Type Identifier ',' ParameterList 
         {
             vector<Symbol*>* para = $4;
-	    (*para).push_back(new Symbol($2, $1, line_no);
+	    (*para).push_back(new Symbol($2 -> id, $1, line_no));
 	    $$ = para;
 	}
     |   {$$ = NULL;}
     ;
 
 Type
-    :   Integer '[' ']'
-    |   Boolean {$$ = BOOL_T}  /* {$$ = new Symbol("", BOOL_T);} */
-    |   Integer {$$ = INTEGER_T}  /* {$$ = new Symbol("", INTEGER_T);} */
-    |   Identifier // TODO
+    :   Integer '[' ']' {$$ = ARRAY_T;}
+    |   Boolean {$$ = BOOL_T;}  /* {$$ = new Symbol("", BOOL_T);} */
+    |   Integer {$$ = INTEGER_T;}  /* {$$ = new Symbol("", INTEGER_T);} */
+    |   Identifier {$$ = CLASS_T;}
     ;
 
 StatementList
@@ -173,39 +283,42 @@ Statement
     :   '{' StatementList '}' {$$ = $2;}
     |   If '(' Expression ')' Statement Else Statement {$$ = new IfStatement($3, $5, $7);}
     |   While '(' Expression ')' Statement {$$ = new WhileStatement($3, $5);}
-    |   Println '(' Expression ')' ';' {$$ = new Println($3);}
-    |   Identifier '=' Expression ';' {$$ = new Assingment($1, $3);}
-    |   Identifier '[' Expression ']' '=' Expression ';'
+    |   Println '(' Expression ')' ';' {$$ = new PrintlnStatement($3);}
+    |   variable '=' Expression ';' {$$ = new Assignment($1, $3);}
+    |   variable '[' Expression ']' '=' Expression ';' {$$ = new ArrayAssignment($1, $3, $6);}
     ;
 
 ExpressionList
-    :   Expression {$$ = $1}
-    |   Expression ',' ExpressionList
-    |   /* Empty */
+    :   Expression {$$ = $1;}
+    |   Expression ',' ExpressionList {$$ = new ExpressionList($1, $3);}
+    |   {$$ = NULL;}
     ;
 
 Expression
     :   Expression And Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(AND_OP, $1, $3);}
     |   Expression '<' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(LESS_THAN_OP, $1, $3);}
     |   Expression '+' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(ADD_OP, $1, $3);}
-    |   Expression '-' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(SUBTRACT, $1, $3);}
+    |   Expression '-' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(SUBTRACT_OP, $1, $3);}
     |   Expression '*' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(MULTIPLY_OP, $1, $3);}
-    |   Expression '[' Expression ']'
-    |   Expression '.' ArrayLength
-    |   Expression '.' Identifier '(' ExpressionList ')'
-    |   Number {$$ = $1;}
-    |   True 
-    |   False
-    |   Identifier 
-    |   This
-    |   New Integer '[' Expression ']'
-    |   New Identifier '(' ')'
+    |   Identifier '[' Expression ']' {$$ = new Variable($1 -> id, $3);}
+    |   Expression '.' ArrayLength { }
+    |   Expression '.' Identifier '(' ExpressionList ')' { }
+    |   Number {$$ = new ConstantInteger($1);}
+    |   True {$$ = new ConstantBoolean(true);}
+    |   False {$$ = new ConstantBoolean(false);}
+    |   variable {$$ = $1;}  
+    |   This { }
+    |   New Integer '[' Expression ']' { }
+    |   New Identifier '(' ')' { }
     |   '!' Expression {$$ = new Not($2);}
     |   '(' Expression ')' {$$ = $2;}
     ;
 
+variable
+    :   Identifier {$$ = new Variable($1 -> id, NULL);}
+
 Identifier
-    :   Id
+    :   Id {$$ = new Symbol($1, UNDEFINED, line_no);}
     ;
 
 %%
@@ -218,8 +331,8 @@ vector<Symbol*>* SetAllType(Symbol* type, vector<Symbol*>* symbols)
     }
     return symbols;
 }
-void yyerror(char *s) {
-    fprintf(stderr, "line %d: %s\n", yylineno, s);
+void yyerror(char const *s) {
+    fprintf(stderr, "line %d: %s\n", line_no, s);
 }
 
 int main(void) {
