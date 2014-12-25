@@ -30,7 +30,7 @@ bool FunctionCall::SemanticCheck()
     bool result = BinaryNode::SemanticCheck();
     if(funcSymbol == NULL)
     {
-        Node::ErrorReport(UNDECLARED_ERROR, id.c_str());
+        Node::ErrorReport(UNDECLARED_FUNCTION_ERROR, id.c_str());
         return false;
     }
     else
@@ -64,8 +64,8 @@ bool FunctionCall::SemanticCheck()
 }
 bool FunctionCall::Initialize()
 {
-    bool result = BinaryNode::Initialze();
-    classSymbol = globalSymbolTable -> GetSymbol(children[0] -> id) // Get class symbol from globalSymbolTable
+    bool result = BinaryNode::Initialize();
+    classSymbol = globalSymbolTable -> GetSymbol((children[0] -> GetSymbol()) -> id); // Get class symbol from globalSymbolTable
     if(classSymbol != NULL)
     {
         if(classSymbol -> symbolTable == NULL)
@@ -76,7 +76,7 @@ bool FunctionCall::Initialize()
         funcSymbol = (classSymbol -> symbolTable) -> GetSymbol(id);
         if(funcSymbol != NULL)
         {
-            type -> funcSymbol -> type;
+            type = funcSymbol -> type;
             return result;
         }
         else
@@ -91,7 +91,7 @@ bool FunctionCall::Initialize()
         return false;    
     }
 }
-Symbol* FunctionCall:GetClassSymbol()
+Symbol* FunctionCall::GetClassSymbol()
 {
     return classSymbol;
 }

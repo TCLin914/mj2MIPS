@@ -47,5 +47,5 @@ bool ArrayAssignment::SemanticCheck()
 }
 bool ArrayAssignment::Initialize()
 {
-    return TernaryNode:Initialize();
+    return TernaryNode::Initialize();
 }

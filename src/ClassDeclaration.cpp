@@ -3,7 +3,7 @@
 #include "ClassDeclaration.h"
 #include <string>
 
-const char static const char MISSING_CLASS_ERROR[] = "The method '%s' got error.";
+const char ClassDeclaration::MISSING_CLASS_ERROR[] = "The method '%s' got error.";
 ClassDeclaration::ClassDeclaration(string id, Node* a) : UnaryNode(a) // (class name, MethodDeclaration)
 {
     this -> id = id;
@@ -21,7 +21,7 @@ void ClassDeclaration::Accept(Visitor* visitor)
 }
 bool ClassDeclaration::SemanticCheck()
 {
-    return UnaryNode:SemanticCheck();
+    return UnaryNode::SemanticCheck();
 }
 bool ClassDeclaration::Initialize()
 {

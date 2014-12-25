@@ -26,4 +26,4 @@ private:
     static const char ARGS_TYPE_ERROR[];
     static const char TOO_FEW_ARGS_ERROR[];
     static const char TOO_MANY_ARGS_ERROR[]; 
-}
+};

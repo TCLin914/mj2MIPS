@@ -23,6 +23,13 @@ class Goal;
 class ExpressionList;
 class ConstantInteger;
 class ConstantBoolean;
+class ClassDeclaration;
+class ArrayAssignment;
+class ArrayLengthExpression;
+class FunctionCall;
+class ThisExpression;
+class NewExpression;
+class NewArray;
 
 
 using namespace std;
@@ -53,6 +60,11 @@ public:
     virtual void Visit(ConstantBoolean*) = 0;
     virtual void Visit(ClassDeclaration*) = 0;
     virtual void Visit(ArrayAssignment*) = 0;
+    virtual void Visit(ArrayLengthExpression*) = 0;
+    virtual void Visit(FunctionCall*) = 0;
+    virtual void Visit(ThisExpression*) = 0;
+    virtual void Visit(NewExpression*) = 0;
+    virtual void Visit(NewArray*) = 0;
     
     
     virtual void SetSymbolTable(SymbolTable*);

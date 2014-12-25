@@ -28,13 +28,18 @@
 #include "PrintlnStatement.h"
 #include "Variable.h"
 #include "ClassDeclaration.h"
+#include "NewArray.h"
+#include "ArrayLengthExpression.h"
 // Ternary node
 #include "IfStatement.h"
 #include "WhileStatement.h"
 #include "ArrayAssignment.h"
+#include "FunctionCall.h"
 //Nullary node
 #include "ConstantInteger.h"
 #include "ConstantBoolean.h"
+#include "ThisExpression.h"
+#include "NewExpression.h"
 
 // Factory 
 #include "ArithmeticOpFactory.h"
@@ -77,8 +82,8 @@ vector<Symbol*>* SetAllType(Symbol*, vector<Symbol*>*);
 %token <tokenval> String 6
 %token <tokenval> Extends 7
 %token <tokenval> Return 8
-%token <tokenval> Integer 9
-%token <tokenval> Boolean 10
+%token <tokenval> Integer 9 
+%token <tokenval> Boolean 10 
 %token <tokenval> If 11
 %token <tokenval> Else 12
 %token <tokenval> While 13
@@ -89,8 +94,8 @@ vector<Symbol*>* SetAllType(Symbol*, vector<Symbol*>*);
 %token <tokenval> This 18
 %token <tokenval> And 19
 %token <tokenval> New 20
-%token <tokenstr> Id 21
-%token <tokenval> Number 22 
+%token <tokenstr> Id 21 //
+%token <tokenstr> Number 22 //
 
 %right '='
 %left '{'
@@ -120,6 +125,7 @@ vector<Symbol*>* SetAllType(Symbol*, vector<Symbol*>*);
 %type <node> ExpressionList
 %type <node> Expression
 %type <node> variable
+
 
 /*
 %code requires
@@ -234,7 +240,8 @@ MethodDeclaration
             yyIntegratedSymbolTable &= ($8) -> Insert(methodSymbol); // Insert symbol(string method_name, Type_t return_type, int declaredLine) to VarDeclarationList(SymbolTable)
             yyIntegratedSymbolTable &= ($8) -> Insert($5); // Insert vector<Symbol*>* to VarDeclarationList(symbolTable)
             MethodDeclaration* method = new MethodDeclaration($3 -> id, $9, $11); // (Indentifier, StatementList, Expression)
-	    methodSymbol -> symbolTable = $8;
+            methodSymbol -> parameters = $5;
+	    methodSymbol -> symbolTable = $8;	   
 	    method -> SetSymbol(methodSymbol);
 	    $$ = method;
 	}
@@ -245,6 +252,7 @@ MethodDeclaration
             yyIntegratedSymbolTable &= symbolTable -> Insert(methodSymbol);
 	    yyIntegratedSymbolTable &= symbolTable -> Insert($5);
             MethodDeclaration* method = new MethodDeclaration($3 -> id, $8, $10);
+            methodSymbol -> parameters = $5;
 	    methodSymbol -> symbolTable = symbolTable;
 	    method -> SetSymbol(methodSymbol);
 	    $$ = method;
@@ -289,7 +297,7 @@ Statement
     ;
 
 ExpressionList
-    :   Expression {$$ = $1;}
+    :   Expression {$$ = new ExpressionList($1, NULL);}
     |   Expression ',' ExpressionList {$$ = new ExpressionList($1, $3);}
     |   {$$ = NULL;}
     ;
@@ -297,28 +305,31 @@ ExpressionList
 Expression
     :   Expression And Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(AND_OP, $1, $3);}
     |   Expression '<' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(LESS_THAN_OP, $1, $3);}
-    |   Expression '+' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(ADD_OP, $1, $3);}
-    |   Expression '-' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(SUBTRACT_OP, $1, $3);}
-    |   Expression '*' Expression {$$ = RelationalOpFactory::CreateRelationalOpNode(MULTIPLY_OP, $1, $3);}
+    |   Expression '+' Expression {$$ = ArithmeticOpFactory::CreateArithmeticOpNode(ADD_OP, $1, $3);}
+    |   Expression '-' Expression {$$ = ArithmeticOpFactory::CreateArithmeticOpNode(SUBTRACT_OP, $1, $3);}
+    |   Expression '*' Expression {$$ = ArithmeticOpFactory::CreateArithmeticOpNode(MULTIPLY_OP, $1, $3);}
     |   Identifier '[' Expression ']' {$$ = new Variable($1 -> id, $3);}
-    |   Expression '.' ArrayLength { }
-    |   Expression '.' Identifier '(' ExpressionList ')' { }
+    |   Expression '.' ArrayLength {$$ = new ArrayLengthExpression($1);}
+    |   Expression '.' Identifier '(' ExpressionList ')' {$$ = new FunctionCall($1, $3 -> id, $5);} 
     |   Number {$$ = new ConstantInteger($1);}
     |   True {$$ = new ConstantBoolean(true);}
     |   False {$$ = new ConstantBoolean(false);}
     |   variable {$$ = $1;}  
-    |   This { }
-    |   New Integer '[' Expression ']' { }
-    |   New Identifier '(' ')' { }
+    |   This {$$ = new ThisExpression(); }
+    |   New Integer '[' Expression ']' {$$ = new NewArray($4);}
+    |   New Identifier '(' ')' {$$ = new NewExpression($2 -> id);}
     |   '!' Expression {$$ = new Not($2);}
     |   '(' Expression ')' {$$ = $2;}
     ;
 
 variable
     :   Identifier {$$ = new Variable($1 -> id, NULL);}
-
+    ;
 Identifier
-    :   Id {$$ = new Symbol($1, UNDEFINED, line_no);}
+    :   Id 
+        {
+            $$ = new Symbol($1, UNDEFINED, line_no);            
+        }
     ;
 
 %%

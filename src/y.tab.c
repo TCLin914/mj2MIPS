@@ -93,12 +93,18 @@
 #include "PrintlnStatement.h"
 #include "Variable.h"
 #include "ClassDeclaration.h"
+#include "NewArray.h"
+#include "ArrayLengthExpression.h"
 // Ternary node
 #include "IfStatement.h"
 #include "WhileStatement.h"
+#include "ArrayAssignment.h"
+#include "FunctionCall.h"
 //Nullary node
 #include "ConstantInteger.h"
 #include "ConstantBoolean.h"
+#include "ThisExpression.h"
+#include "NewExpression.h"
 
 // Factory 
 #include "ArithmeticOpFactory.h"
@@ -132,7 +138,7 @@ Node* yyHeader = NULL;
 vector<Symbol*>* SetAllType(Symbol*, vector<Symbol*>*);
 
 
-#line 136 "y.tab.c" /* yacc.c:339  */
+#line 142 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -193,6 +199,7 @@ extern int yydebug;
   };
   */
 #endif
+
 /* Tokens.  */
 /*
 #define Class 1
@@ -229,7 +236,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 230 "y.tab.c" /* yacc.c:358  */
+#line 236 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -526,12 +533,12 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   147,   147,   155,   159,   160,   164,   173,   181,   191,
-     203,   209,   218,   222,   230,   234,   244,   258,   264,   270,
-     274,   275,   276,   277,   281,   282,   286,   287,   288,   289,
-     290,   291,   295,   296,   297,   301,   302,   303,   304,   305,
-     306,   307,   308,   309,   310,   311,   312,   313,   314,   315,
-     316,   317,   321,   324
+       0,   150,   150,   158,   162,   163,   167,   176,   184,   194,
+     206,   212,   221,   225,   233,   237,   248,   263,   269,   275,
+     279,   280,   281,   282,   286,   287,   291,   292,   293,   294,
+     295,   296,   300,   301,   302,   306,   307,   308,   309,   310,
+     311,   312,   313,   314,   315,   316,   317,   318,   319,   320,
+     321,   322,   326,   329
 };
 #endif
 
@@ -1413,34 +1420,34 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 148 "mj.y" /* yacc.c:1646  */
+#line 151 "mj.y" /* yacc.c:1646  */
     { 
 	    (yyval.node)  = new Goal((yyvsp[-1].node), (yyvsp[0].node));	
 	    printf("OK\n"); 	
 	}
-#line 1419 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 3:
-#line 155 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = new MainClass((yyvsp[-15].symbol) -> id, (yyvsp[-2].node));}
 #line 1425 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 4:
-#line 159 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = new ClassDeclarationList((yyvsp[-1].node), (yyvsp[0].node));}
+  case 3:
+#line 158 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new MainClass((yyvsp[-15].symbol) -> id, (yyvsp[-2].node));}
 #line 1431 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 5:
-#line 160 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = NULL;}
+  case 4:
+#line 162 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new ClassDeclarationList((yyvsp[-1].node), (yyvsp[0].node));}
 #line 1437 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 5:
+#line 163 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = NULL;}
+#line 1443 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 6:
-#line 165 "mj.y" /* yacc.c:1646  */
+#line 168 "mj.y" /* yacc.c:1646  */
     { 
             Symbol* classSymbol = new Symbol((yyvsp[-4].symbol) -> id, UNDEFINED, line_no);
             yyIntegratedSymbolTable &= ((yyvsp[-2].symbolTable)) -> Insert(classSymbol);
@@ -1449,11 +1456,11 @@ yyreduce:
             yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
             (yyval.node) = new ClassDeclaration((yyvsp[-4].symbol) -> id, (yyvsp[-1].node)); // (class name, MethodDeclarationList)
         }
-#line 1450 "y.tab.c" /* yacc.c:1646  */
+#line 1456 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 174 "mj.y" /* yacc.c:1646  */
+#line 177 "mj.y" /* yacc.c:1646  */
     {
             Symbol* classSymbol = new Symbol((yyvsp[-3].symbol) -> id, UNDEFINED, line_no);
             yyIntegratedSymbolTable &= ((yyvsp[-1].node) -> GetMethodsSymbolTable()) -> Insert(classSymbol);          
@@ -1461,11 +1468,11 @@ yyreduce:
             yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
             (yyval.node) = new ClassDeclaration((yyvsp[-3].symbol) -> id, (yyvsp[-1].node)); // (class name, MethodDeclarationList)
         }
-#line 1462 "y.tab.c" /* yacc.c:1646  */
+#line 1468 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 182 "mj.y" /* yacc.c:1646  */
+#line 185 "mj.y" /* yacc.c:1646  */
     {
             Symbol* classSymbol = new Symbol((yyvsp[-6].symbol) -> id, CLASS_T, line_no);
             yyIntegratedSymbolTable &= ((yyvsp[-2].symbolTable)) -> Insert(classSymbol);
@@ -1475,11 +1482,11 @@ yyreduce:
             yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
             (yyval.node) = new ClassDeclaration((yyvsp[-6].symbol) -> id, (yyvsp[-1].node)); // (class name, MethodDeclarationList)   
         }
-#line 1476 "y.tab.c" /* yacc.c:1646  */
+#line 1482 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 192 "mj.y" /* yacc.c:1646  */
+#line 195 "mj.y" /* yacc.c:1646  */
     { 
             Symbol* classSymbol = new Symbol((yyvsp[-5].symbol) -> id, CLASS_T, line_no);
             yyIntegratedSymbolTable &= ((yyvsp[-1].node) -> GetMethodsSymbolTable()) -> Insert(classSymbol);           
@@ -1488,37 +1495,37 @@ yyreduce:
             yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
             (yyval.node) = new ClassDeclaration((yyvsp[-5].symbol) -> id, (yyvsp[-1].node)); // (class name, MethodDeclarationList)        
         }
-#line 1489 "y.tab.c" /* yacc.c:1646  */
+#line 1495 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 204 "mj.y" /* yacc.c:1646  */
+#line 207 "mj.y" /* yacc.c:1646  */
     {
 	    SymbolTable* varSymbolTable = new SymbolTable();
 	    yyIntegratedSymbolTable &= varSymbolTable -> Insert((yyvsp[0].symbol));  /* SymbleTable::Insert(Symbol* symbol) */
 	    (yyval.symbolTable) = varSymbolTable;
 	}
-#line 1499 "y.tab.c" /* yacc.c:1646  */
+#line 1505 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 210 "mj.y" /* yacc.c:1646  */
+#line 213 "mj.y" /* yacc.c:1646  */
     {
 	    SymbolTable* varSymbolTable = (yyvsp[-1].symbolTable);
             yyIntegratedSymbolTable &= varSymbolTable -> Insert((yyvsp[0].symbol));  
 	    (yyval.symbolTable) = varSymbolTable;
 	}
-#line 1509 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 12:
-#line 218 "mj.y" /* yacc.c:1646  */
-    {(yyval.symbol) = new Symbol((yyvsp[-1].symbol) -> id, (yyvsp[-2].type_t), line_no);}
 #line 1515 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 12:
+#line 221 "mj.y" /* yacc.c:1646  */
+    {(yyval.symbol) = new Symbol((yyvsp[-1].symbol) -> id, (yyvsp[-2].type_t), line_no);}
+#line 1521 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 13:
-#line 223 "mj.y" /* yacc.c:1646  */
+#line 226 "mj.y" /* yacc.c:1646  */
     {
 	    SymbolTable* symbolTable = (yyvsp[0].node) -> GetMethodsSymbolTable();
             yyIntegratedSymbolTable &= symbolTable -> Insert((yyvsp[-1].node) -> GetSymbol());
@@ -1526,276 +1533,280 @@ yyreduce:
 	    methods -> SetMethodsSymbolTable(symbolTable);
 	    (yyval.node) = methods;
 	}
-#line 1527 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 14:
-#line 230 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = NULL;}
 #line 1533 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 14:
+#line 233 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = NULL;}
+#line 1539 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 15:
-#line 235 "mj.y" /* yacc.c:1646  */
+#line 238 "mj.y" /* yacc.c:1646  */
     {
 	    Symbol* methodSymbol = new Symbol((yyvsp[-10].symbol) -> id, (yyvsp[-11].type_t), line_no);
             yyIntegratedSymbolTable &= ((yyvsp[-5].symbolTable)) -> Insert(methodSymbol); // Insert symbol(string method_name, Type_t return_type, int declaredLine) to VarDeclarationList(SymbolTable)
             yyIntegratedSymbolTable &= ((yyvsp[-5].symbolTable)) -> Insert((yyvsp[-8].symbolList)); // Insert vector<Symbol*>* to VarDeclarationList(symbolTable)
             MethodDeclaration* method = new MethodDeclaration((yyvsp[-10].symbol) -> id, (yyvsp[-4].node), (yyvsp[-2].node)); // (Indentifier, StatementList, Expression)
-	    methodSymbol -> symbolTable = (yyvsp[-5].symbolTable);
+            methodSymbol -> parameters = (yyvsp[-8].symbolList);
+	    methodSymbol -> symbolTable = (yyvsp[-5].symbolTable);	   
 	    method -> SetSymbol(methodSymbol);
 	    (yyval.node) = method;
 	}
-#line 1547 "y.tab.c" /* yacc.c:1646  */
+#line 1554 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 245 "mj.y" /* yacc.c:1646  */
+#line 249 "mj.y" /* yacc.c:1646  */
     {
 	    Symbol* methodSymbol = new Symbol((yyvsp[-9].symbol) -> id, (yyvsp[-10].type_t), line_no);
 	    SymbolTable* symbolTable = new SymbolTable();
             yyIntegratedSymbolTable &= symbolTable -> Insert(methodSymbol);
 	    yyIntegratedSymbolTable &= symbolTable -> Insert((yyvsp[-7].symbolList));
             MethodDeclaration* method = new MethodDeclaration((yyvsp[-9].symbol) -> id, (yyvsp[-4].node), (yyvsp[-2].node));
+            methodSymbol -> parameters = (yyvsp[-7].symbolList);
 	    methodSymbol -> symbolTable = symbolTable;
 	    method -> SetSymbol(methodSymbol);
 	    (yyval.node) = method;
 	}
-#line 1562 "y.tab.c" /* yacc.c:1646  */
+#line 1570 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 259 "mj.y" /* yacc.c:1646  */
+#line 264 "mj.y" /* yacc.c:1646  */
     {
 	    vector<Symbol*>* para = new vector<Symbol*>();
 	    (*para).push_back(new Symbol((yyvsp[0].symbol) -> id, (yyvsp[-1].type_t), line_no));
 	    (yyval.symbolList) = para;
 	}
-#line 1572 "y.tab.c" /* yacc.c:1646  */
+#line 1580 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 265 "mj.y" /* yacc.c:1646  */
+#line 270 "mj.y" /* yacc.c:1646  */
     {
             vector<Symbol*>* para = (yyvsp[0].symbolList);
 	    (*para).push_back(new Symbol((yyvsp[-2].symbol) -> id, (yyvsp[-3].type_t), line_no));
 	    (yyval.symbolList) = para;
 	}
-#line 1582 "y.tab.c" /* yacc.c:1646  */
+#line 1590 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 270 "mj.y" /* yacc.c:1646  */
+#line 275 "mj.y" /* yacc.c:1646  */
     {(yyval.symbolList) = NULL;}
-#line 1588 "y.tab.c" /* yacc.c:1646  */
+#line 1596 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 274 "mj.y" /* yacc.c:1646  */
+#line 279 "mj.y" /* yacc.c:1646  */
     {(yyval.type_t) = ARRAY_T;}
-#line 1594 "y.tab.c" /* yacc.c:1646  */
+#line 1602 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 275 "mj.y" /* yacc.c:1646  */
+#line 280 "mj.y" /* yacc.c:1646  */
     {(yyval.type_t) = BOOL_T;}
-#line 1600 "y.tab.c" /* yacc.c:1646  */
+#line 1608 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 276 "mj.y" /* yacc.c:1646  */
+#line 281 "mj.y" /* yacc.c:1646  */
     {(yyval.type_t) = INTEGER_T;}
-#line 1606 "y.tab.c" /* yacc.c:1646  */
+#line 1614 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 277 "mj.y" /* yacc.c:1646  */
+#line 282 "mj.y" /* yacc.c:1646  */
     {(yyval.type_t) = CLASS_T;}
-#line 1612 "y.tab.c" /* yacc.c:1646  */
+#line 1620 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 281 "mj.y" /* yacc.c:1646  */
+#line 286 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new StatementList((yyvsp[-1].node), (yyvsp[0].node));}
-#line 1618 "y.tab.c" /* yacc.c:1646  */
+#line 1626 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 282 "mj.y" /* yacc.c:1646  */
+#line 287 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = NULL;}
-#line 1624 "y.tab.c" /* yacc.c:1646  */
+#line 1632 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 286 "mj.y" /* yacc.c:1646  */
+#line 291 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = (yyvsp[-1].node);}
-#line 1630 "y.tab.c" /* yacc.c:1646  */
+#line 1638 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 287 "mj.y" /* yacc.c:1646  */
+#line 292 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new IfStatement((yyvsp[-4].node), (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1636 "y.tab.c" /* yacc.c:1646  */
+#line 1644 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 288 "mj.y" /* yacc.c:1646  */
+#line 293 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new WhileStatement((yyvsp[-2].node), (yyvsp[0].node));}
-#line 1642 "y.tab.c" /* yacc.c:1646  */
+#line 1650 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 289 "mj.y" /* yacc.c:1646  */
+#line 294 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new PrintlnStatement((yyvsp[-2].node));}
-#line 1648 "y.tab.c" /* yacc.c:1646  */
+#line 1656 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 290 "mj.y" /* yacc.c:1646  */
+#line 295 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new Assignment((yyvsp[-3].node), (yyvsp[-1].node));}
-#line 1654 "y.tab.c" /* yacc.c:1646  */
+#line 1662 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 291 "mj.y" /* yacc.c:1646  */
-    { }
-#line 1660 "y.tab.c" /* yacc.c:1646  */
+#line 296 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new ArrayAssignment((yyvsp[-6].node), (yyvsp[-4].node), (yyvsp[-1].node));}
+#line 1668 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 295 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = (yyvsp[0].node);}
-#line 1666 "y.tab.c" /* yacc.c:1646  */
+#line 300 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new ExpressionList((yyvsp[0].node), NULL);}
+#line 1674 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 296 "mj.y" /* yacc.c:1646  */
+#line 301 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new ExpressionList((yyvsp[-2].node), (yyvsp[0].node));}
-#line 1672 "y.tab.c" /* yacc.c:1646  */
+#line 1680 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 297 "mj.y" /* yacc.c:1646  */
+#line 302 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = NULL;}
-#line 1678 "y.tab.c" /* yacc.c:1646  */
+#line 1686 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 301 "mj.y" /* yacc.c:1646  */
+#line 306 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = RelationalOpFactory::CreateRelationalOpNode(AND_OP, (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1684 "y.tab.c" /* yacc.c:1646  */
+#line 1692 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 302 "mj.y" /* yacc.c:1646  */
+#line 307 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = RelationalOpFactory::CreateRelationalOpNode(LESS_THAN_OP, (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1690 "y.tab.c" /* yacc.c:1646  */
+#line 1698 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 303 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = RelationalOpFactory::CreateRelationalOpNode(ADD_OP, (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1696 "y.tab.c" /* yacc.c:1646  */
+#line 308 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = ArithmeticOpFactory::CreateArithmeticOpNode(ADD_OP, (yyvsp[-2].node), (yyvsp[0].node));}
+#line 1704 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 304 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = RelationalOpFactory::CreateRelationalOpNode(SUBTRACT_OP, (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1702 "y.tab.c" /* yacc.c:1646  */
+#line 309 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = ArithmeticOpFactory::CreateArithmeticOpNode(SUBTRACT_OP, (yyvsp[-2].node), (yyvsp[0].node));}
+#line 1710 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 305 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = RelationalOpFactory::CreateRelationalOpNode(MULTIPLY_OP, (yyvsp[-2].node), (yyvsp[0].node));}
-#line 1708 "y.tab.c" /* yacc.c:1646  */
+#line 310 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = ArithmeticOpFactory::CreateArithmeticOpNode(MULTIPLY_OP, (yyvsp[-2].node), (yyvsp[0].node));}
+#line 1716 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 306 "mj.y" /* yacc.c:1646  */
+#line 311 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new Variable((yyvsp[-3].symbol) -> id, (yyvsp[-1].node));}
-#line 1714 "y.tab.c" /* yacc.c:1646  */
+#line 1722 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 307 "mj.y" /* yacc.c:1646  */
-    { }
-#line 1720 "y.tab.c" /* yacc.c:1646  */
+#line 312 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new ArrayLengthExpression((yyvsp[-2].node));}
+#line 1728 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 308 "mj.y" /* yacc.c:1646  */
-    { }
-#line 1726 "y.tab.c" /* yacc.c:1646  */
+#line 313 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new FunctionCall((yyvsp[-5].node), (yyvsp[-3].symbol) -> id, (yyvsp[-1].node));}
+#line 1734 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 309 "mj.y" /* yacc.c:1646  */
-    {(yyval.node) = new ConstantInteger((yyvsp[0].tokenval));}
-#line 1732 "y.tab.c" /* yacc.c:1646  */
+#line 314 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new ConstantInteger((yyvsp[0].tokenstr));}
+#line 1740 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 310 "mj.y" /* yacc.c:1646  */
+#line 315 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new ConstantBoolean(true);}
-#line 1738 "y.tab.c" /* yacc.c:1646  */
+#line 1746 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 311 "mj.y" /* yacc.c:1646  */
+#line 316 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new ConstantBoolean(false);}
-#line 1744 "y.tab.c" /* yacc.c:1646  */
+#line 1752 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 312 "mj.y" /* yacc.c:1646  */
+#line 317 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = (yyvsp[0].node);}
-#line 1750 "y.tab.c" /* yacc.c:1646  */
+#line 1758 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 313 "mj.y" /* yacc.c:1646  */
-    { }
-#line 1756 "y.tab.c" /* yacc.c:1646  */
+#line 318 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new ThisExpression(); }
+#line 1764 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 314 "mj.y" /* yacc.c:1646  */
-    { }
-#line 1762 "y.tab.c" /* yacc.c:1646  */
+#line 319 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new NewArray((yyvsp[-1].node));}
+#line 1770 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 315 "mj.y" /* yacc.c:1646  */
-    { }
-#line 1768 "y.tab.c" /* yacc.c:1646  */
+#line 320 "mj.y" /* yacc.c:1646  */
+    {(yyval.node) = new NewExpression((yyvsp[-2].symbol) -> id);}
+#line 1776 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 316 "mj.y" /* yacc.c:1646  */
+#line 321 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new Not((yyvsp[0].node));}
-#line 1774 "y.tab.c" /* yacc.c:1646  */
+#line 1782 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 317 "mj.y" /* yacc.c:1646  */
+#line 322 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = (yyvsp[-1].node);}
-#line 1780 "y.tab.c" /* yacc.c:1646  */
+#line 1788 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 321 "mj.y" /* yacc.c:1646  */
+#line 326 "mj.y" /* yacc.c:1646  */
     {(yyval.node) = new Variable((yyvsp[0].symbol) -> id, NULL);}
-#line 1786 "y.tab.c" /* yacc.c:1646  */
+#line 1794 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 324 "mj.y" /* yacc.c:1646  */
-    {(yyval.symbol) = new Symbol((yyvsp[0].tokenstr), UNDEFINED, line_no);}
-#line 1792 "y.tab.c" /* yacc.c:1646  */
+#line 330 "mj.y" /* yacc.c:1646  */
+    {
+            (yyval.symbol) = new Symbol((yyvsp[0].tokenstr), UNDEFINED, line_no);            
+        }
+#line 1802 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1796 "y.tab.c" /* yacc.c:1646  */
+#line 1806 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2023,7 +2034,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 327 "mj.y" /* yacc.c:1906  */
+#line 335 "mj.y" /* yacc.c:1906  */
 
 vector<Symbol*>* SetAllType(Symbol* type, vector<Symbol*>* symbols)
 {

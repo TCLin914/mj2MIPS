@@ -9,7 +9,7 @@ class ClassDeclaration : public UnaryNode
 public:
     ClassDeclaration(string, Node*); // (class name, MethodDeclaration)
     void SetSymbolTable(SymbolTable*, SymbolTable*);
-    void Accept(Visitor*)
+    void Accept(Visitor*);
     bool SemanticCheck();
     bool Initialize();
     Symbol* GetClassSymbol();

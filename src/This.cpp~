@@ -1,0 +1,17 @@
+#include "stdafx.h"
+#include "Node.h"
+#include "This.h"
+
+This::This() : NullaryNode()
+{
+
+}
+void This::Accept(Visitor* visitor)
+{
+    visitor -> Visit(this);
+}    
+bool This::Initialize()
+{
+    type = CLASS_T;
+    return true;
+}

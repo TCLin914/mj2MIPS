@@ -32,7 +32,7 @@ bool Assignment::SemanticCheck()
 	Node::ErrorReport(UNASSIGNABLE_ERROR);
 	return false;
     }
-    if((children[0] -> GetType() != children[1] -> GetType()) || (children[0] -> GetType() != INTEGER_T && children[0] -> GetType() != BOOL_T))
+    if((children[0] -> GetType() != children[1] -> GetType()) || (children[0] -> GetType() != INTEGER_T && children[0] -> GetType() != BOOL_T && children[0] -> GetType() != ARRAY_T))
     {
 	Node::ErrorReport(WRONG_TYPE_ERROR);
 	return false;

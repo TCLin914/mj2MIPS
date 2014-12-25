@@ -1,0 +1,34 @@
+#include "stdafx.h"
+#include "Node.h"
+#include "FunctionDef.h"
+#include <string>
+
+const char FunctionDef::MISSING_FUNCTION_ERROR[] = "The function '%s' got error";
+
+FunctionDef::FunctionDef(string id, Node* a): UnaryNode(a)
+{
+	this->id = id;
+}
+void FunctionDef::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
+{
+	funcEntry = gSymTable->GetSymbol(id);
+	if(funcEntry == NULL)
+		Node::ErrorReport(MISSING_FUNCTION_ERROR, id.c_str());
+	UnaryNode::SetSymbolTable(gSymTable, funcEntry->symbolTable);
+}
+void FunctionDef::Accept(Visitor* visitor)
+{
+    visitor->Visit(this);
+}
+bool FunctionDef::SemanticCheck()
+{
+	return UnaryNode::SemanticCheck();
+}
+bool FunctionDef::Initialize()
+{
+	return UnaryNode::Initialize();
+}
+Symbol* FunctionDef::GetFunctionSymbol()
+{
+    return funcEntry;
+}

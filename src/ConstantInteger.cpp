@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-ConstantInteger::ConstantInteger(int num) : NullaryNode()
+ConstantInteger::ConstantInteger(string num) : NullaryNode()
 {
-    this -> num = num;
+    this -> num = atoi(num.c_str());
 }
 int ConstantInteger::GetIntValue()
 {

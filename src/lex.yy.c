@@ -828,7 +828,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 19 "mj.l"
-{ count(); return 	If; }
+{ count(); return If; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
@@ -923,128 +923,135 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 39 "mj.l"
-{ count(); return Id; }
+{ 
+                                      count();
+                                      yylval.tokenstr = strdup(yytext); 
+                                      return Id; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 40 "mj.l"
-{ count(); return Number; }
+#line 43 "mj.l"
+{ 
+                                      count();
+                                      yylval.tokenstr = strdup(yytext);
+                                      return Number; 
+                                  }
 	YY_BREAK
 /*\"(.|"\n")*\"                     { count(); return Text; }*/
 case 22:
 YY_RULE_SETUP
-#line 43 "mj.l"
+#line 51 "mj.l"
 { count(); return And; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 44 "mj.l"
+#line 52 "mj.l"
 { count(); return '<'; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 45 "mj.l"
+#line 53 "mj.l"
 { count(); return '+'; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 46 "mj.l"
+#line 54 "mj.l"
 { count(); return '-'; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 47 "mj.l"
+#line 55 "mj.l"
 { count(); return '*'; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 48 "mj.l"
+#line 56 "mj.l"
 { count(); return '!'; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 49 "mj.l"
+#line 57 "mj.l"
 { count(); return '='; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 50 "mj.l"
+#line 58 "mj.l"
 { count(); return '.'; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 52 "mj.l"
+#line 60 "mj.l"
 { count(); return '('; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 53 "mj.l"
+#line 61 "mj.l"
 { count(); return ')'; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 54 "mj.l"
+#line 62 "mj.l"
 { count(); return '['; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 55 "mj.l"
+#line 63 "mj.l"
 { count(); return ']'; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 56 "mj.l"
+#line 64 "mj.l"
 { count(); return '{'; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 57 "mj.l"
+#line 65 "mj.l"
 { count(); return '}'; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 58 "mj.l"
+#line 66 "mj.l"
 { count(); return ','; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 59 "mj.l"
+#line 67 "mj.l"
 { count(); return ';'; }
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 61 "mj.l"
+#line 69 "mj.l"
 { /* Comment */yylineno++; }
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 62 "mj.l"
+#line 70 "mj.l"
 { /* Comment */yylineno++; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 63 "mj.l"
+#line 71 "mj.l"
 { count(); }
 	YY_BREAK
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
-#line 64 "mj.l"
+#line 72 "mj.l"
 { count(); yylineno++; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 65 "mj.l"
+#line 73 "mj.l"
 {yyerror(unknown);}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 67 "mj.l"
+#line 75 "mj.l"
 ECHO;
 	YY_BREAK
-#line 1048 "lex.yy.c"
+#line 1055 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2042,7 +2049,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 67 "mj.l"
+#line 75 "mj.l"
 
 
 

@@ -1,0 +1,43 @@
+#include "YaccCompatible.h"
+
+using namespace std;
+
+typedef union {
+    int tokenval;
+    char* tokenstr;
+    OpCode_t opCode;
+    vector<Symbol*>* symbolList;
+    Symbol* symbol;
+    Type_t type_t;
+    SymbolTable* symbolTable;
+    Node* node;
+} YYSTYPE;
+
+
+
+#define Class 
+#define Public 
+#define Static 
+#define Void 
+#define Main 
+#define String 
+#define Extends 
+#define Return 
+#define Integer 
+#define Boolean 
+#define If 
+#define Else 
+#define While 
+#define Println 
+#define ArrayLength 
+#define True 
+#define False 
+#define This 
+#define And 
+#define New 
+#define Id 
+#define Number 
+
+
+
+extern YYSTYPE yylval;

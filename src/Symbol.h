@@ -17,9 +17,13 @@ public:
     Symbol(string, Type_t, int);
     string id;
     Type_t type;
+    int maxIndex;
     vector<Symbol*>* parameters;
     vector<ArrayRange_t> dimensions;
+    
     SymbolTable* symbolTable;
     int declaredLine;
     // llvm::Value* value;
+private:
+    //int[] array;
 };

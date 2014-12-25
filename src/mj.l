@@ -16,7 +16,7 @@ digit                             [0-9]
 alphanum                          ({alpha}|{digit})
 
 %%
-"if"                              { count(); return 	If; }
+"if"                              { count(); return If; }
 "else"                            { count(); return Else; }
 "while"                           { count(); return While; }
 "class"                           { count(); return Class; }
@@ -36,8 +36,16 @@ alphanum                          ({alpha}|{digit})
 "length"                          { count(); return ArrayLength; }
 "main"                            { count(); return Main; }
 
-{alpha}({alphanum}|"_")*          { count(); return Id; }
-{digit}+                          { count(); return Number; }
+{alpha}({alphanum}|"_")*          { 
+                                      count();
+                                      yylval.tokenstr = strdup(yytext); 
+                                      return Id; }
+{digit}+                          { 
+                                      count();
+                                      yylval.tokenstr = strdup(yytext);
+                                      return Number; 
+                                  }
+
     /*\"(.|"\n")*\"                     { count(); return Text; }*/
 
 "&&"                              { count(); return And; }

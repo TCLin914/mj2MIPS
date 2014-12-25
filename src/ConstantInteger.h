@@ -7,7 +7,7 @@ using namespace std;
 class ConstantInteger : public NullaryNode
 {
 public:
-    ConstantInteger(int);
+    ConstantInteger(string);
     int GetIntValue();
     bool Initialize();
     void Accept(Visitor*);
