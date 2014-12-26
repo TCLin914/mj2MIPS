@@ -224,11 +224,10 @@ VarDeclaration
 MethodDeclarationList
     :   MethodDeclaration MethodDeclarationList 
         {
-            SymbolTable* symbolTable;
             if($2 != NULL)
-                symbolTable = $2 -> GetMethodsSymbolTable();
+                SymbolTable* symbolTable = $2 -> GetMethodsSymbolTable();
             else
-                symbolTable = new SymbolTable();            
+                SymbolTable* symbolTable = new SymbolTable();            
 	    
             yyIntegratedSymbolTable &= symbolTable -> Insert($1 -> GetSymbol());
 	    MethodDeclarationList* methods = new MethodDeclarationList($1, $2);

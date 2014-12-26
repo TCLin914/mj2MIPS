@@ -14,7 +14,7 @@ public:
     bool Initialize();
     bool IsAssignable();
     bool IsLocalVariable();
-    int ArraySize();
+    int Dimensions();
     Symbol* GetSymbol();
 private:
     Symbol* GetSymbol(string id);

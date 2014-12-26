@@ -1022,13 +1022,13 @@ case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
 #line 69 "mj.l"
-{ /* Comment */yylineno++; }
+{ /* Comment */yylineno++;line_no++; }
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
 #line 70 "mj.l"
-{ /* Comment */yylineno++; }
+{ /* Comment */yylineno++;line_no++; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
@@ -1039,7 +1039,7 @@ case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
 #line 72 "mj.l"
-{ count(); yylineno++; }
+{ count(); yylineno++;line_no++; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP

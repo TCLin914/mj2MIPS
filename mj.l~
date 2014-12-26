@@ -69,7 +69,7 @@ alphanum                          ({alpha}|{digit})
 "//".*"\n"                        { /* Comment */yylineno++;line_no++; }
 "/*"(.|"\n")*"*\\"                { /* Comment */yylineno++;line_no++; }
 [ \t\r]                           { count(); }
-\n                                { count(); yylineno++;line_no++; }
+\n                                { count(); yylineno++; }
 .                                 {yyerror(unknown);}
 
 %%

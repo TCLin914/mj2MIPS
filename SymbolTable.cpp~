@@ -68,7 +68,6 @@ bool InsertInto(SymbolTable* src, SymbolTable* target)
         result &= target -> Insert(src -> GetSymbol(i));
     return result;
 }
-
 bool Initial(SymbolTable* symbolTable)
 {
  // TODO:   
