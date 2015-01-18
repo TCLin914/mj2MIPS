@@ -4,7 +4,8 @@
 #include "Type.h"
 #include "ArrayRange.h"
 #include "SymbolTable.h"
-// #include "llvm/Value.h"
+#include "llvm/IR/Value.h"
+#include "llvm/IR/DerivedTypes.h"
 
 using namespace std;
 
@@ -19,12 +20,14 @@ public:
     Type_t type;
     //int maxIndex;
     vector<Symbol*>* parameters;
-    // vector<ArrayRange_t> dimensions;
+    SymbolTable* variables;
+   
     int arraySize;
+    llvm::StructType* structType;
     
     SymbolTable* symbolTable;
     int declaredLine;
-    // llvm::Value* value;
+    llvm::Value* value;
 private:
     //int[] array;
 };

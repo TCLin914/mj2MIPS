@@ -2,17 +2,19 @@
 #include <vector>
 #include "Visitor.h"
 #include "Type.h"
-#include "llvm/LLVMContext.h"
-#include "llvm/Module.h"
-#include "llvm/DerivedTypes.h"
-#include "llvm/Constants.h"
-#include "llvm/Instructions.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/Attributes.h"
 #include "llvm/Analysis/Verifier.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/Support/IRBuilder.h"
-
+//#include "llvm/Support/IRBuilder.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/Bitcode/ReaderWriter.h"
+
 
 using namespace std;
 using namespace llvm;
@@ -31,8 +33,7 @@ public:
     virtual void Visit(Add*);
     virtual void Visit(Subtract*);
     virtual void Visit(Multiply*);
-    virtual void Visit(Not*);
-    virtual void Visit(Println*);
+    virtual void Visit(Not*);    
     virtual void Visit(IfStatement*);
     virtual void Visit(WhileStatement*);
     virtual void Visit(MainClass*);
@@ -49,6 +50,7 @@ public:
     virtual void Visit(ThisExpression*);
     virtual void Visit(NewExpression*);
     virtual void Visit(NewArray*);
+    void ExternalFunctionsDef();
 protected:
 private:
     static const int NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR = 2;
@@ -56,15 +58,28 @@ private:
     void VisitChildren(Node*, int);
     void AllocateArguments(vector<Symbol*>);
     void AllocateVariables(SymbolTable*, bool isGlobal = false);
+    vector<Value*> ReversedOrderPop(int num);
+    Value* Dereference(Value*);
     Type* GetArrayType(Symbol*);
     Type* ToLLVMType(Type_t);
     LLVMContext context;
     Module* module;
     Function* currentFunction;
     BasicBlock* currentBB;
+    PointerType* currentPointerType;
     bool isRHSVisit;
     
+    Value* Pop();
+    Type_t PopTypes(int);    
     vector<Value*> values;
-
+    vector<Type_t> types;
+    
+    Function* printFunc;
+    GlobalVariable* gvar_array__str1;   //"%d\n"
+    GlobalVariable* gvar_array__str2;   //"%g\n"
+    GlobalVariable* gvar_array__str3;   //"%s\n"
+    Constant* printIntArg;
+    Constant* printRealArg;
+    Constant* printStringArg;
     
 };

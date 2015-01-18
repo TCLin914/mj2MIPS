@@ -1,12 +1,6 @@
 class test{
      public static void main(String[] a){
-	System.out.println(true);
+	System.out.println(1);
      }
     
 }
- class CS {
-         public int test() {
-         return 6;
-         }
-     
-     }

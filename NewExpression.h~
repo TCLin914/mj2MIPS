@@ -10,6 +10,7 @@ public:
     NewExpression(string);
     void SetSymbolTable(SymbolTable*, SymbolTable*);
     void Accept(Visitor*);
+    bool SemanticCheck();
     bool Initialize();
     Symbol* GetClassSymbol();
 private:

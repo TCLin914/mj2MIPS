@@ -26,11 +26,14 @@ bool Variable::SemanticCheck()
 {
     bool result = UnaryNode::SemanticCheck();
     Node* ptr = children[0];
+    /*
     if(varSymbol -> dimensions.size() < Depth(children[0], ExpressionList::INDEX_OF_MORE))
     {
         Node::ErrorReport(DIMENSION_ERROR, id.c_str());
 	return false;
     }
+    */
+    /*
     for(int i = 0; ptr != NULL; ptr = ptr -> GetChild(ExpressionList::INDEX_OF_MORE), i++)
     {
 	if(ptr -> GetType() != INTEGER_T)
@@ -47,6 +50,23 @@ bool Variable::SemanticCheck()
 		return false;
 	    }
 	}
+    }
+    */
+    if(ptr -> GetType() != INTEGER_T)
+    {
+        Node::ErrorReport(INDEX_TYPE_ERROR, id.c_str());
+	return false;
+    }
+    if(ptr -> GetChild(ExpressionList::INDEX_OF_EXPRESSION) != NULL && ptr -> GetChild(ExpressionList::INDEX_OF_EXPRESSION) -> IsEvaluable())
+    {
+        //a = 5
+        //int[a]
+        int index = ptr -> GetChild(ExpressionList::INDEX_OF_EXPRESSION) -> GetIntValue();
+        if(index > varSymbol -> arraySize)
+        {
+            Node::ErrorReport(INDEX_RANGE_ERROR, index, id.c_str());
+            return false;
+        }
     }
     return result;
 }
@@ -78,9 +98,9 @@ bool Variable::IsLocalVariable()
 {
     return localSymbolTable -> GetSymbol(id) != NULL && globalSymbolTable != localSymbolTable;
 }
-int Variable::Dimensions()
+int Variable::ArraySize()
 {
-    return varSymbol -> dimensions.size();
+    return varSymbol -> arraySize;
 }
 Symbol* Variable::GetSymbol()
 {

@@ -74,6 +74,7 @@ bool Variable::Initialize()
 {
     bool result = UnaryNode::Initialize();
     varSymbol = GetSymbol(id);
+    /*
     if(varSymbol != NULL)
     {
         Node* ptr = children[0];
@@ -89,6 +90,7 @@ bool Variable::Initialize()
 	Node::ErrorReport(UNDECLARED_VARIABLE_ERROR, id.c_str());
 	return false;
     }
+    */
 }
 bool Variable::IsAssignable()
 {

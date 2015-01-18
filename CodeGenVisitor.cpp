@@ -34,18 +34,57 @@
 #include "Symbol.h"
 #include "SymbolTable.h"
 
-//TODO: Add include llmv
-
 extern SymbolTable yySymbolTable;
 
 CodeGenVisitor::CodeGenVisitor()
 {
-    module = new Modul("Mini-Java", context);
+    module = new Module("Mini-Java", context);
+    module -> dump();
     isRHSVisit = true;
+}
+
+void CodeGenVisitor::ExternalFunctionsDef() ////
+{
+    PointerType* pointerType = PointerType::get(IntegerType::get(module -> getContext(), 8), 0);
+    vector<Type*> printSting_args;
+    printSting_args.push_back(pointerType);
+    FunctionType* FuncTy_6 = FunctionType::get(/*Result=*/IntegerType::get(module -> getContext(), 32), /*Params=*/printSting_args, /*isVarArg=*/true);
+    printFunc = module->getFunction("printf");
+    if(!printFunc) {
+
+        printFunc = Function::Create(FuncTy_6, GlobalValue::ExternalLinkage, "printf", module);
+        printFunc -> setCallingConv(CallingConv::C);
+    }
+    //AttrListPtr* printFunc_PAL;
+    //printFunc -> setAttributes(printFunc_PAL);
+
+    ArrayType* arrayTy = ArrayType::get(IntegerType::get(module -> getContext(), 8), 4);
+    gvar_array__str1 = new GlobalVariable(*module, arrayTy, /*isConstant=*/true, GlobalValue::PrivateLinkage, 0, /*Name=*/".str1");
+    gvar_array__str1 -> setAlignment(1);
+    Constant *const_array_7 = ConstantDataArray::getString(module -> getContext(), "%d\x0A", true);
+    gvar_array__str1 -> setInitializer(const_array_7);
+    ConstantInt* const_int32_9 = ConstantInt::get(module -> getContext(), APInt(32, StringRef("0"), 10));
+    std::vector<Constant*> const_ptr_10_indices;
+    const_ptr_10_indices.push_back(const_int32_9);
+    const_ptr_10_indices.push_back(const_int32_9);
+    printIntArg = ConstantExpr::getGetElementPtr(gvar_array__str1, const_ptr_10_indices);
+    
+    gvar_array__str2 = new GlobalVariable(*module, arrayTy, /*isConstant=*/true, GlobalValue::PrivateLinkage, 0, /*Name=*/".str2");
+    gvar_array__str2 -> setAlignment(1);
+    Constant *const_array_8 = ConstantDataArray::getString(module -> getContext(), "%g\x0A", true);
+    gvar_array__str2 -> setInitializer(const_array_8);
+    printRealArg = ConstantExpr::getGetElementPtr(gvar_array__str2, const_ptr_10_indices);
+
+    gvar_array__str3 = new GlobalVariable(*module, arrayTy, /*isConstant=*/true, GlobalValue::PrivateLinkage, 0, /*Name=*/".str3");
+    gvar_array__str3 -> setAlignment(1);
+    Constant *const_array_9 = ConstantDataArray::getString(module -> getContext(), "%s\x0A", true);
+    gvar_array__str3 -> setInitializer(const_array_9);
+    printStringArg = ConstantExpr::getGetElementPtr(gvar_array__str3, const_ptr_10_indices);
 }
 
 void CodeGenVisitor::Visit(Goal* node)
 {
+    printf("Visit Goal node");
     const int INDEX_OF_MAINCLASS = 0;
     const int INDEX_OF_ClASSDECLARATIONLIST = 1;
     
@@ -58,40 +97,106 @@ void CodeGenVisitor::Visit(Goal* node)
     if(node -> GetChild(INDEX_OF_MAINCLASS) != NULL)
         node -> GetChild(INDEX_OF_MAINCLASS) -> Accept(this);
     //TODO:
+    mainFunc -> dump();
+    outs() << *module;
+    
 }
 void CodeGenVisitor::Visit(MainClass* node)
 {
-    //TODO:
+    printf("Visit MainClass node");
+    const int NUMBER_OF_MAINCLASS_CHILDREN = 1;
+    VisitChildren(node, NUMBER_OF_MAINCLASS_CHILDREN);   
 }
+
 void CodeGenVisitor::Visit(ClassDeclarationList* node)
 {
+    printf("Visit ClassDeclarationList node");
     const int NUMBER_OF_ClASSDECLARATIONLIST_CHILDREN = 2;
     VisitChildren(node, NUMBER_OF_ClASSDECLARATIONLIST_CHILDREN);
 }
+
 void CodeGenVisitor::Visit(ClassDeclaration* node)
 {
-    //TODO:
+    printf("Visit ClassDeclaration node");
+    const int NUMBER_OF_CLASSDECLARATION_CHILDREN = 1;
+    Symbol* classSymbol = node -> GetClassSymbol();
+    SymbolTable* classSymbolTable = classSymbol -> symbolTable;
+    
+    StructType* classType = module -> getTypeByName(classSymbol -> id);
+    if(!classType)
+    {
+        classType = StructType::create(context, classSymbol -> id); 
+        
+    }
+    else
+    {
+        printf("Error occurs in Visit(ClassDeclaration*) : Class Declaration duplicate\n");
+    }
+    vector<Type*> classTypeFields;
+    for(int i = 0; i < classSymbol -> parameters -> size(); i++)
+    {
+        classTypeFields.push_back(ToLLVMType((*classSymbol -> parameters)[i] -> type)); //TODO:
+    }
+    if(classType -> isOpaque())
+    {
+        classType -> setBody(classTypeFields, false);
+    }       
+    currentPointerType = PointerType::get(classType, 0);   
+    classSymbol -> structType = classType;
+    VisitChildren(node, NUMBER_OF_CLASSDECLARATION_CHILDREN);    
 }
+
 void CodeGenVisitor::Visit(MethodDeclarationList* node)
 {
+    printf("Visit MethodDeclarationList node");
     const int NUMBER_OF_METHODDECLARATIONLIST_CHILDREN = 2;
     VisitChildren(node, NUMBER_OF_METHODDECLARATIONLIST_CHILDREN);
 }
+
 void CodeGenVisitor::Visit(MethodDeclaration* node)
 {
-    //TODO:
+    printf("Visit MethodDeclaration node");
+    const int NUMBER_OF_METHODDECLARATION_CHILDREN = 2;
+    Symbol* methodSymbol = node -> GetMethodSymbol();
+    SymbolTable* methodSymbolTable = methodSymbol -> symbolTable;
+    Symbol* retSymbol = methodSymbolTable -> GetSymbol(methodSymbol -> id);
+    vector<Type*> methodArgs;
+    methodArgs.push_back(currentPointerType); //set class pointer
+    for(int i = 0; i < methodSymbol -> parameters -> size(); i++)
+        methodArgs.push_back(ToLLVMType((*methodSymbol -> parameters)[i] -> type));
+        
+    FunctionType* methodType = FunctionType::get(ToLLVMType(retSymbol -> type), methodArgs, false);
+    Function* method = cast<Function>(module -> getOrInsertFunction(methodSymbol -> id.c_str(), methodType));
+    methodSymbol -> value = method;
+    currentFunction = method;
+     
+    currentBB = BasicBlock::Create(context, "", method);
+    AllocateArguments(*(methodSymbol -> parameters));
+    AllocateVariables(methodSymbol -> symbolTable);
+    VisitChildren(node, NUMBER_OF_METHODDECLARATION_CHILDREN);
+    if(methodSymbol -> type != VOID_T)
+    {
+        //isRHSVisit = true;
+        // ReturnInst::Create(context, Dereference(retSymbol -> value), currentBB);
+        Value* retValue = Pop();
+        ReturnInst::Create(context, Dereference(retValue), currentBB);
+    }
+    /*
+    else
+        ReturnInst::Create(context, currentBB);
+    */    
 }
+
 void CodeGenVisitor::Visit(StatementList* node)
 {
+    printf("Visit StatementList node");
     const int NUMBER_OF_STATEMENTLIST_CHILDREN = 2;
     VisitChildren(node, NUMBER_OF_STATEMENTLIST_CHILDREN);
 }
-void CodeGenVisitor::Visit(Println* node)
-{
-    //TODO:
-}
+
 void CodeGenVisitor::Visit(IfStatement* node)
 {
+    printf("Visit IfStatement node");
     const int INDEX_OF_PREDICATE = 0;
     const int INDEX_OF_TRUE_BLOCK = 1;
     const int INDEX_OF_FALSE_BLOCK = 2;
@@ -126,8 +231,10 @@ void CodeGenVisitor::Visit(IfStatement* node)
         }
     }
 }
+
 void CodeGenVisitor::Visit(WhileStatement* node)
 {
+    printf("Visit WhileStatement node");
     const int INDEX_OF_PREDICATE = 0;
     const int INDEX_OF_BODY = 1;
     if(node -> GetChild(INDEX_OF_PREDICATE) != NULL)
@@ -156,8 +263,10 @@ void CodeGenVisitor::Visit(WhileStatement* node)
         }
     }
 }
+
 void CodeGenVisitor::Visit(Assignment* node)
 {
+    printf("Visit Assignment node");
     const int NUMBER_OF_ASSIGNMENT_CHILDREN = 2;
     const int INDEX_OF_LHS = 0;
     const int INDEX_OF_RHS = 1;
@@ -180,8 +289,10 @@ void CodeGenVisitor::Visit(Assignment* node)
     else if(values.size() == 1)
         printf("Error occurs in Visit(Assignment*) : values.size() = 1\n");
 }
+
 void CodeGenVisitor::Visit(And* node)
 {
+    printf("Visit And node");
     const int NUMBER_OF_AND_CHILDREN = 2;
     VisitChildren(node, NUMBER_OF_AND_CHILDREN);
     if(values.size() >= NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR)
@@ -204,8 +315,10 @@ void CodeGenVisitor::Visit(And* node)
     else if(values.size() == 1)
         printf("Error occurs in Visit(And*) : valuse.size() = 1\n");
 }
+
 void CodeGenVisitor::Visit(LessThan* node)
 {
+    printf("Visit LessThan node");
     const int NUMBER_OF_LESS_THAN_CHILDREN = 2;
     VisitChildren(node, NUMBER_OF_LESS_THAN_CHILDREN);
     if(values.size() >= NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR)
@@ -228,16 +341,18 @@ void CodeGenVisitor::Visit(LessThan* node)
     else if(values.size() == 1)
         printf("Error occurs in Visit(LessThan*) : valuse.size() = 1\n");
 }
+
 void CodeGenVisitor::Visit(Add* node)
 {
+    printf("Visit Add node");
     const int NUMBER_OF_ADD_CHILDREN = 2;
     VisitChildren(node, NUMBER_OF_ADD_CHILDREN);
     if(values.size() >= NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR)
     {
         IRBuilder<> builder(currentBB);
         Type_t type = PopTypes(NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR);
-        Value* operand2 = pop();
-        Value* operand1 = pop();
+        Value* operand2 = Pop();
+        Value* operand1 = Pop();
         switch(type)
         {
             case INTEGER_T:
@@ -252,16 +367,18 @@ void CodeGenVisitor::Visit(Add* node)
     else if(values.size() == 1)
         printf("Error occurs in Visit(Add*) : values.size() = 1\n");
 }
+
 void CodeGenVisitor::Visit(Subtract* node)
 {
+    printf("Visit Subtract node");
     const int NUMBER_OF_SUBTRACE_CHILDREN = 2;
     VisitChildren(node, NUMBER_OF_SUBTRACE_CHILDREN);
-    if(value.size() >= NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR)
+    if(values.size() >= NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR)
     {
         IRBuilder<> builder(currentBB);
         Type_t type = PopTypes(NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR);
-        Value* operand2 = pop();
-        Value* operand1 = pop();
+        Value* operand2 = Pop();
+        Value* operand1 = Pop();
         switch(type)
         {
             case INTEGER_T:
@@ -276,16 +393,18 @@ void CodeGenVisitor::Visit(Subtract* node)
     else if(values.size() == 1)
         printf("Error occurs in Visit(Subtract*) : values.size() = 1\n");
 }
+
 void CodeGenVisitor::Visit(Multiply* node) 
 {
+    printf("Visit Multiply node");
     const int NUMBER_OF_MULTIPLY_CHILDREN = 2;
     VisitChildren(node, NUMBER_OF_MULTIPLY_CHILDREN);
-    if(value.size() >= NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR)
+    if(values.size() >= NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR)
     {
         IRBuilder<> builder(currentBB);
         Type_t type = PopTypes(NUMBER_OF_OPERANDS_OF_BINARY_OPERATOR);
-        Value* operand2 = pop();
-        Value* operand1 = pop();
+        Value* operand2 = Pop();
+        Value* operand1 = Pop();
         switch(type)
         {
             case INTEGER_T:
@@ -300,10 +419,12 @@ void CodeGenVisitor::Visit(Multiply* node)
     else if(values.size() == 1)
         printf("Error occurs in Visit(Multiply*) : values.size() = 1\n");
 }
+
 void CodeGenVisitor::Visit(Not* node)
 {
+    printf("Visit Not node");
     const int NUMBER_OF_NOT_CHILDREN = 1;
-    VisitChildren(nNode, NUMBER_OF_NOT_CHILDREN);
+    VisitChildren(node, NUMBER_OF_NOT_CHILDREN);
     if(values.size() >= NUMBER_OF_OPERANDS_OF_UNARY_OPERATOR)
     {
         IRBuilder<> builder(currentBB);
@@ -321,26 +442,34 @@ void CodeGenVisitor::Visit(Not* node)
     }
 }
 
-
 void CodeGenVisitor::Visit(Variable* node)
 {
+    printf("Visit Variable node");
     const int NUMBER_OF_VARIABLE_CHILDREN = 1;
     Symbol* varSymbol = node -> GetSymbol();
     VisitChildren(node, NUMBER_OF_VARIABLE_CHILDREN);
     Value* resultVal;
+    /*
     if(varSymbol -> type != ARRAY_T)
         resultVal = varSymbol -> value;
-    //TODO:
+    */
+    resultVal = varSymbol -> value;
+    values.push_back(resultVal);
+    types.push_back(varSymbol -> type);    
 }
+
 void CodeGenVisitor::Visit(ConstantInteger* node)
 {
+    printf("Visit ConstantInteger node");
     int constInt = node -> GetIntValue();
     IRBuilder<> builder(currentBB);
     values.push_back(builder.getInt32(constInt));
     types.push_back(INTEGER_T);
 }
+
 void CodeGenVisitor::Visit(ConstantBoolean* node)
 {
+    printf("Visit ConstantBoolean node");
     ConstantInt* constBoolean;
     if(node -> GetBoolValue())
         constBoolean = ConstantInt::getTrue(context);
@@ -349,17 +478,159 @@ void CodeGenVisitor::Visit(ConstantBoolean* node)
     values.push_back(constBoolean);
     types.push_back(BOOL_T);
 }
-void CodeGenVisitor::Visit(PrintlnStatement*);
 
-void CodeGenVisitor::Visit(ExpressionList*);
+void CodeGenVisitor::Visit(PrintlnStatement* node) 
+{
+    printf("Visit PrintlnStatement node");
+    const int NUMBER_OF_PRINTLNSTATEMENT_CHILDREN = 1;
+    //Symbol* funcSymbol = node -> GetFuncSymbol();
+    VisitChildren(node, NUMBER_OF_PRINTLNSTATEMENT_CHILDREN);
+    std::vector<Value*> int32_18_params;
+    int32_18_params.push_back(printStringArg);
+    int32_18_params.push_back(Pop());
+    PopTypes(NUMBER_OF_PRINTLNSTATEMENT_CHILDREN);
+    CallInst::Create(printFunc, int32_18_params, "", currentBB);    
+}
 
+void CodeGenVisitor::Visit(ExpressionList* node)
+{
+    printf("Visit ExpressionList node");
+    const int NUMBER_OF_EXPRESSIONLIST_CHILDREN = 2;
+    VisitChildren(node, NUMBER_OF_EXPRESSIONLIST_CHILDREN);
+}
 
-void CodeGenVisitor::Visit(ArrayAssignment*);
-void CodeGenVisitor::Visit(ArrayLengthExpression*);
-void CodeGenVisitor::Visit(FunctionCall*);
-void CodeGenVisitor::Visit(ThisExpression*);
-void CodeGenVisitor::Visit(NewExpression*);
-void CodeGenVisitor::Visit(NewArray*);
+void CodeGenVisitor::Visit(ArrayAssignment* node)
+{
+    printf("Visit ArrayAssignment node");
+    const int INDEX_OF_VARIABLE = 0;
+    const int INDEX_OF_ARRAY_INDEX = 1;
+    const int INDEX_OF_VALUE = 2;
+    const int NUMBER_OF_ARRAYASSIGNMENT_CHILDREN = 3;
+    VisitChildren(node, NUMBER_OF_ARRAYASSIGNMENT_CHILDREN);
+    vector<Value*> ranges;
+    if(values.size() >= NUMBER_OF_ARRAYASSIGNMENT_CHILDREN)
+    {
+        Value* value = Pop();
+        Value* index = Pop();
+        Value* variable = Pop();       
+        PopTypes(NUMBER_OF_ARRAYASSIGNMENT_CHILDREN);
+        ranges.push_back(ConstantInt::get(context, APInt(32, StringRef("0"), 10)));
+        ranges.push_back(index);
+        
+        Constant* ptr = ConstantExpr::getGetElementPtr((Constant*)variable, ranges);
+        StoreInst* inst = new StoreInst(value, ptr, false, currentBB);        
+    }
+    else
+    {
+        printf("Error occurs in Visit(ArrayAssignment*) : values.size is incorrect\n");
+    }   
+}
+
+void CodeGenVisitor::Visit(ArrayLengthExpression* node)
+{
+    printf("Visit ArrayLenghtExpression node");
+    const int NUMBER_OF_ARRAYLENGTHEXPRESSION_CHILDREN = 1;
+    VisitChildren(node, NUMBER_OF_ARRAYLENGTHEXPRESSION_CHILDREN);
+    if(values.size() >= NUMBER_OF_ARRAYLENGTHEXPRESSION_CHILDREN)
+    {
+        ArrayType* arrayType = (ArrayType*)Pop() -> getType();
+        IRBuilder<> builder(currentBB);
+        values.push_back(builder.getInt32(arrayType -> getNumElements()));
+        types.push_back(INTEGER_T);   
+    }
+    else
+    {
+        printf("Error occurs in Visit(ArrayLengthExpression*) : values.size is incorrect\n");
+    }
+}
+
+void CodeGenVisitor::Visit(FunctionCall* node)
+{
+    printf("Visit FunctionCall node");
+    const int NUMBER_OF_FUNCTION_CALL_CHILDREN = 2;
+    const int INDEX_OF_CLASS = 0;
+    const int INDEX_OF_PARAMETERS = 1;
+    Symbol* funcSymbol = node -> GetFuncSymbol();
+    node -> GetChild(INDEX_OF_PARAMETERS) -> Accept(this); // get parameters
+    Value* classVariable;
+    if(values.size() >= (*funcSymbol->parameters).size())
+    {
+        node -> GetChild(INDEX_OF_CLASS) -> Accept(this);
+        classVariable = Pop();
+        PopTypes(1);
+        IRBuilder<> builder(currentBB);
+        vector<Value*> parameters = ReversedOrderPop((*funcSymbol -> parameters).size());
+        parameters.insert(parameters.begin(), classVariable);
+        Value* retValue = builder.CreateCall(funcSymbol -> value, parameters);
+        if(funcSymbol->type != VOID_T)
+        {
+            values.push_back(retValue);
+            types.push_back(funcSymbol -> type);
+        }         
+    }    
+}
+
+void CodeGenVisitor::Visit(ThisExpression* node)
+{
+    //IRBuilder<> builder(currentBB);
+    //Value* value = builder.CreateAlloca
+    //TODO:
+
+}
+
+void CodeGenVisitor::Visit(NewExpression* node)
+{
+    printf("Visit NewExpression node");
+    Symbol* classSymbol = node -> GetClassSymbol();
+    IRBuilder<> builder(currentBB); 
+    Value* value = builder.CreateAlloca(classSymbol -> structType, NULL, classSymbol -> id.c_str());
+     
+    values.push_back(value);
+    types.push_back(CLASS_T);
+}
+
+void CodeGenVisitor::Visit(NewArray* node)
+{
+    printf("Visit NewArray node");
+    const int NUMBER_OF_NEWARRAY_CHILDREN = 1;
+    VisitChildren(node, NUMBER_OF_NEWARRAY_CHILDREN);
+    if(values.size() >= NUMBER_OF_OPERANDS_OF_UNARY_OPERATOR)
+    {
+        IRBuilder<> builder(currentBB);
+        Type_t type = PopTypes(NUMBER_OF_OPERANDS_OF_UNARY_OPERATOR);
+        Value* val = Pop();          
+        int arraySize;
+        if (ConstantInt* ci = dyn_cast<ConstantInt>(val)) 
+        {
+            if (ci -> getBitWidth() <= 32) 
+            {
+                arraySize = ci -> getSExtValue();
+            } 
+            else
+            {
+                printf("Error occurs in Visit(NewArray*) : Array size exceed 32 bits\n");
+            }
+        }
+        else
+        {
+             printf("Error occurs in Visit(NewArray*) : ConstantInt* ci = dyn_cast<ConstantInt>(val)\n");
+        }
+        switch(type)
+        {
+            case INTEGER_T:
+                values.push_back(builder.CreateAlloca(ArrayType::get(Type::getInt32Ty(context), arraySize)));
+                break;
+            default:
+                printf("Error occurs in Visit(NewArray*) : invalid type\n");
+                types.pop_back();
+        }
+        types.push_back(ARRAY_T);
+    }    
+    else
+    {
+        printf("Error occurs in Visit(NewArray*) : values.size is incorrect\n");
+    }
+}
 
 void CodeGenVisitor::AllocateArguments(vector<Symbol*> symbols)
 {
@@ -422,6 +693,19 @@ Type* CodeGenVisitor::GetArrayType(Symbol* symbol)
     return type;
 }
 */
+
+vector<Value*> CodeGenVisitor::ReversedOrderPop(int num)
+{
+    vector<Value*> result;
+    for(int i = num; i > 0; i--)
+        result.push_back(values[values.size() - i]);
+    for(int i = num; i > 0; i--)
+        Pop();
+    if(num > 0)
+        PopTypes(num);
+    return result;
+}
+
 Type* CodeGenVisitor::ToLLVMType(Type_t type)
 {
     switch(type)
@@ -433,17 +717,21 @@ Type* CodeGenVisitor::ToLLVMType(Type_t type)
         case VOID_T:
             return Type::getVoidTy(context);
         case ARRAY_T:
-            return ArrayType::get(getInt32Ty(context), 0); //Initialize int array size to zero.
+            return ArrayType::get(Type::getInt32Ty(context), 0); //Initialize int array size to zero.
+        case CLASS_T:
+            return StructType::get(context, false);
         default:
             printf("Error occurs in TypeTToLLVMTyVisitChildrenpe(Type_t): invalid type\n");
     }
 }
+
 Value* CodeGenVisitor::Pop()
 {
     Value* value = values.back();
     values.pop_back();
     return value;
 }
+
 void CodeGenVisitor::VisitChildren(Node* pNode, int number)
 {
     for(int i = 0; i < number; i++)
@@ -452,12 +740,18 @@ void CodeGenVisitor::VisitChildren(Node* pNode, int number)
             pNode -> GetChild(i) -> Accept(this);
     }
 }
+
 Type_t CodeGenVisitor::PopTypes(int number)
 {
     Type_t type = types.back();
     for(int i = 0; i < number; i++)
         types.pop_back();
     return type;
+}
+
+Value* CodeGenVisitor::Dereference(Value* value)    //
+{
+    return new LoadInst(value, "", false, currentBB);
 }
     
     

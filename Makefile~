@@ -1,6 +1,6 @@
 object = *.o
 header = *.h
-FF = -I/usr/lib/llvm-3.4/include -DNDEBUG -D_GNU_SOURCE -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
+FF = -I /usr/local/include -DNDEBUG -D_GNU_SOURCE -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
 
 all: compile
 	g++ $(object) -lfl $(FF) `llvm-config --libs core ` `llvm-config --ldflags` -lpthread

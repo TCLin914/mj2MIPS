@@ -13,6 +13,7 @@ class Add;
 class Subtract;
 class Multiply;
 class Not;
+class Println;
 class IfStatement;
 class WhileStatement;
 class MainClass;
@@ -46,7 +47,8 @@ public:
     virtual void Visit(Add*) = 0;
     virtual void Visit(Subtract*) = 0;
     virtual void Visit(Multiply*) = 0;
-    virtual void Visit(Not*) = 0;   
+    virtual void Visit(Not*) = 0;
+    virtual void Visit(Println*) = 0;
     virtual void Visit(IfStatement*) = 0;
     virtual void Visit(WhileStatement*) = 0;
     virtual void Visit(MainClass*) = 0;

@@ -22,7 +22,7 @@ bool NewExpression::Initialize()
 {
     type = CLASS_T;
 }
-Symbol* NewExpression::GetClassSymbol()
+Symbol* ClassDeclaration::GetClassSymbol()
 {
     return classEntry;
 }
