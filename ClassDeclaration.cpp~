@@ -10,11 +10,11 @@ ClassDeclaration::ClassDeclaration(string id, Node* a) : UnaryNode(a) // (class 
 }
 void ClassDeclaration::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 {
-    
+    /*
     classEntry = gSymTable -> GetSymbol(id);
     if(classEntry == NULL)
         Node::ErrorReport(MISSING_CLASS_ERROR, id.c_str());
-    
+    */
     UnaryNode::SetSymbolTable(gSymTable, classEntry -> symbolTable);
 }
 void ClassDeclaration::Accept(Visitor* visitor)
@@ -29,6 +29,7 @@ bool ClassDeclaration::Initialize()
 {
     return UnaryNode::Initialize();
 }
+
 
 Symbol* ClassDeclaration::GetClassSymbol()
 {

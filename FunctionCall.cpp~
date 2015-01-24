@@ -64,7 +64,7 @@ bool FunctionCall::SemanticCheck()
 	    }   
         }       
     }
-    //printf("%s\n", result ? "true" : "false");
+    printf("%s\n", result ? "true" : "false");
     return result;    
 }
 bool FunctionCall::Initialize()

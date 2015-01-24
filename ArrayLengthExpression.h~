@@ -13,7 +13,7 @@ public:
     bool Initialize();
     //bool IsAssignable();
     //bool IsLocalVariable();    
-    //Symbol* GetSymbol();
+    Symbol* GetSymbol();
 private:
-    //Symbol* varSymbol;    
+    Symbol* varSymbol;    
 };

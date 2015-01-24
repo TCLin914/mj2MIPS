@@ -16,7 +16,7 @@ public:
     Symbol* GetClassSymbol();
 private:
     Symbol* classEntry;
-    string id;
+    
     static const char MISSING_CLASS_ERROR[];
 };  
 

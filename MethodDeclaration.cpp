@@ -11,14 +11,14 @@ MethodDeclaration::MethodDeclaration(string id, Node* a, Node* b) : BinaryNode(a
 }
 void MethodDeclaration::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 {
-    methodEntry = gSymTable -> GetSymbol(id);
+    methodEntry = lSymTable -> GetSymbol(id);
     if(methodEntry == NULL)
 	Node::ErrorReport(MISSING_METHOD_ERROR, id.c_str());
-    BinaryNode::SetSymbolTable(gSymTable, methodEntry -> symbolTable);
+    BinaryNode::SetSymbolTable(lSymTable, methodEntry -> symbolTable);
 }
 void MethodDeclaration::Accept(Visitor* visitor)
 {
-    visitor->Visit(this);
+    visitor -> Visit(this);
 }
 bool MethodDeclaration::SemanticCheck()
 {

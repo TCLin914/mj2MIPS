@@ -26,9 +26,8 @@ public:
     
     void SetMethodsSymbolTable(SymbolTable*);
     SymbolTable* GetMethodsSymbolTable();
-    
     void SetSymbol(Symbol*);
-    virtual Symbol* GetSymbol();
+    Symbol* GetSymbol();
 
 protected:
     virtual void ErrorReport(string, ...);

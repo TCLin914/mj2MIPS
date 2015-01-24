@@ -1,34 +1,35 @@
 #include "stdafx.h"
 #include "Node.h"
-#include "FunctionDef.h"
+#include "MethodDeclaration.h"
 #include <string>
 
-const char FunctionDef::MISSING_FUNCTION_ERROR[] = "The function '%s' got error";
+const char MethodDeclaration::MISSING_METHOD_ERROR[] = "The method '%s' got error.";
 
-FunctionDef::FunctionDef(string id, Node* a): UnaryNode(a)
+MethodDeclaration::MethodDeclaration(string id, Node* a, Node* b) : BinaryNode(a, b)
 {
-	this->id = id;
+    this -> id = id;
 }
-void FunctionDef::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
+void MethodDeclaration::SetSymbolTable(SymbolTable* gSymTable, SymbolTable* lSymTable)
 {
-	funcEntry = gSymTable->GetSymbol(id);
-	if(funcEntry == NULL)
-		Node::ErrorReport(MISSING_FUNCTION_ERROR, id.c_str());
-	UnaryNode::SetSymbolTable(gSymTable, funcEntry->symbolTable);
+    printf("%d\n", lSymTable -> Size());
+    methodEntry = lSymTable -> GetSymbol(id);
+    if(methodEntry == NULL)
+	Node::ErrorReport(MISSING_METHOD_ERROR, id.c_str());
+    BinaryNode::SetSymbolTable(lSymTable, methodEntry -> symbolTable);
 }
-void FunctionDef::Accept(Visitor* visitor)
+void MethodDeclaration::Accept(Visitor* visitor)
 {
-    visitor->Visit(this);
+    visitor -> Visit(this);
 }
-bool FunctionDef::SemanticCheck()
+bool MethodDeclaration::SemanticCheck()
 {
-	return UnaryNode::SemanticCheck();
+    return BinaryNode::SemanticCheck();
 }
-bool FunctionDef::Initialize()
+bool MethodDeclaration::Initialize()
 {
-	return UnaryNode::Initialize();
+    return BinaryNode::Initialize();
 }
-Symbol* FunctionDef::GetFunctionSymbol()
+Symbol* MethodDeclaration::GetMethodSymbol()
 {
-    return funcEntry;
+    return methodEntry;
 }

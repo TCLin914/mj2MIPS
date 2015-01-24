@@ -59,6 +59,7 @@ private:
     void AllocateArguments(vector<Symbol*>);
     void AllocateVariables(SymbolTable*, bool isGlobal = false);
     vector<Value*> ReversedOrderPop(int num);
+    Value* Dereference(Value*);
     Type* GetArrayType(Symbol*);
     Type* ToLLVMType(Type_t);
     LLVMContext context;
@@ -81,4 +82,5 @@ private:
     Constant* printRealArg;
     Constant* printStringArg;
     
+    void Outputs();
 };

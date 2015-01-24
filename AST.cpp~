@@ -57,7 +57,7 @@ using namespace llvm;
 int main(int argc, char* argv[])
 {
     bool initialized = false;
-    bool semanticVvalid = false;
+    bool semanticValid = false;
     Visitor* codeGenVisitor = new CodeGenVisitor();
     printf("%s\n", argv[1]);
     freopen(argv[1], "r", stdin);
@@ -65,12 +65,15 @@ int main(int argc, char* argv[])
     freopen("con","r",stdin);
     //Initialize(&yySymbolTable);
     yyHeader -> SetSymbolTable(&yySymbolTable, &yySymbolTable);
+    printf("%s%s\n", "yyIntegratedSymbolTable= ", yyIntegratedSymbolTable ? "true" : "false");
     if(yyIntegratedSymbolTable)
 	initialized = yyHeader -> Initialize();
+    printf("%s%s\n", "initialized= ", initialized ? "true" : "false");
     if(initialized)
-        semanticVvalid = yyHeader -> SemanticCheck();
-    printf("%s", semanticVvalid ? "true" : "false");
-    if(semanticVvalid)
+        semanticValid = yyHeader -> SemanticCheck();
+    printf("%s%s", "semanticValid= ", semanticValid ? "true" : "false");
+    
+    if(semanticValid)
     {
         ((CodeGenVisitor*)codeGenVisitor) -> ExternalFunctionsDef();
         yyHeader -> Accept(codeGenVisitor);

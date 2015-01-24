@@ -12,9 +12,9 @@ public:
     void Accept(Visitor*);
     bool SemanticCheck();
     bool Initialize();
-    Symbol* GetMainClassSymbol();
+    //Symbol* GetMainClassSymbol();
 private:
-    Symbol* mainclassEntry;
+    //Symbol* mainclassEntry;
     string id;
     static const char MISSING_MAIN_CLASS_ERROR[];
 };

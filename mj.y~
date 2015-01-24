@@ -149,7 +149,7 @@ vector<Symbol*>* SetAllType(Symbol*, vector<Symbol*>*);
 Goal
     :   MainClass ClassDeclarationList      
         { 
-	    $$  = new Goal($1, $2);	
+	    yyHeader  = new Goal($1, $2);	
 	    printf("OK\n"); 	
 	}
     ;
@@ -160,22 +160,27 @@ MainClass
 
 ClassDeclarationList
     :   ClassDeclaration ClassDeclarationList {$$ = new ClassDeclarationList($1, $2);}
-    |   {printf("null"); $$ = NULL;}
+    |   {$$ = NULL;}
     ;
 
 ClassDeclaration
-    :   Class Identifier '{' VarDeclarationList MethodDeclarationList '}' 
-        { 
+   :   Class Identifier '{' VarDeclarationList MethodDeclarationList '}' 
+        {            
             Symbol* classSymbol = new Symbol($2 -> id, UNDEFINED, line_no);
-            classSymbol -> variables = $4;  
-            yyIntegratedSymbolTable &= ($4) -> Insert(classSymbol);            
+            vector<Symbol*>* para = new vector<Symbol*>();
+            for(int i = 0; i < $4 -> Size(); i++)
+            {                
+	        (*para).push_back($4 -> GetSymbol(i));
+            }
+            classSymbol -> parameters = para;
+            yyIntegratedSymbolTable &= ($4) -> Insert(classSymbol);
             yyIntegratedSymbolTable &= InsertInto($5 -> GetMethodsSymbolTable(), $4);
             classSymbol -> symbolTable = $4;            
             yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
             $$ = new ClassDeclaration($2 -> id, $5); // (class name, MethodDeclarationList)
         }
     |   Class Identifier '{' MethodDeclarationList '}' 
-        {
+        {          
             Symbol* classSymbol = new Symbol($2 -> id, UNDEFINED, line_no);
             yyIntegratedSymbolTable &= ($4 -> GetMethodsSymbolTable()) -> Insert(classSymbol);          
             classSymbol -> symbolTable = $4 -> GetMethodsSymbolTable();            
@@ -183,27 +188,32 @@ ClassDeclaration
             $$ = new ClassDeclaration($2 -> id, $4); // (class name, MethodDeclarationList)
         }
     |   Class Identifier Extends Identifier '{' VarDeclarationList MethodDeclarationList '}' 
-        {
-            Symbol* classSymbol = new Symbol($2 -> id, CLASS_T, line_no);              
+        {           
+            Symbol* classSymbol = new Symbol($2 -> id, CLASS_T, line_no);
+            vector<Symbol*>* para = new vector<Symbol*>();
+            for(int i = 0; i < $4 -> Size(); i++)
+            {                
+	        (*para).push_back($4 -> GetSymbol(i));
+            }
+            classSymbol -> parameters = para;
             yyIntegratedSymbolTable &= ($6) -> Insert(classSymbol);
-            classSymbol -> variables = $6; 
             yyIntegratedSymbolTable &= InsertInto($7 -> GetMethodsSymbolTable(), $6);
             yyIntegratedSymbolTable &= InsertInto((yySymbolTable.GetSymbol($4 -> id)) -> symbolTable, $6);
-            classSymbol -> symbolTable = $6;       
+            classSymbol -> symbolTable = $6;            
             yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
             $$ = new ClassDeclaration($2 -> id, $7); // (class name, MethodDeclarationList)   
         }
     |   Class Identifier Extends Identifier '{' MethodDeclarationList '}' 
-        { 
+        {            
             Symbol* classSymbol = new Symbol($2 -> id, CLASS_T, line_no);
             yyIntegratedSymbolTable &= ($6 -> GetMethodsSymbolTable()) -> Insert(classSymbol);           
             yyIntegratedSymbolTable &= InsertInto((yySymbolTable.GetSymbol($4 -> id)) -> symbolTable, $6 -> GetMethodsSymbolTable());
-            classSymbol -> symbolTable = $6 -> GetMethodsSymbolTable(); 
-            classSymbol -> variables = (yySymbolTable.GetSymbol($4 -> id)) -> variables;           
+            classSymbol -> symbolTable = $6 -> GetMethodsSymbolTable();            
             yyIntegratedSymbolTable &= yySymbolTable.Insert(classSymbol);
             $$ = new ClassDeclaration($2 -> id, $6); // (class name, MethodDeclarationList)        
         }
     ;
+
 
 VarDeclarationList
     :   VarDeclaration 

@@ -7,7 +7,7 @@
 
 const char Variable::DIMENSION_ERROR[] = "The dimension of array '%s' is wrong";
 const char Variable::UNDECLARED_VARIABLE_ERROR[] = "The variable '%s' wasn't declared";
-const char Variable::INDEX_TYPE_ERROR[] = "The index of '%s' must be a integer value";
+const char Variable::TYPE_ERROR[] = "The variable '%s' is a array";
 const char Variable::INDEX_RANGE_ERROR[] = "The index value '%d' of '%s' is not in it's range";
 
 Variable::Variable(string id, Node* a) : UnaryNode(a)
@@ -24,39 +24,21 @@ void Variable::Accept(Visitor* visitor)
 }
 bool Variable::SemanticCheck()
 {
-    bool result = UnaryNode::SemanticCheck();
+    bool result = UnaryNode::SemanticCheck();   
     Node* ptr = children[0];
-    /*
-    if(varSymbol -> dimensions.size() < Depth(children[0], ExpressionList::INDEX_OF_MORE))
+    
+    if(ptr == NULL)
     {
-        Node::ErrorReport(DIMENSION_ERROR, id.c_str());
-	return false;
-    }
-    */
-    /*
-    for(int i = 0; ptr != NULL; ptr = ptr -> GetChild(ExpressionList::INDEX_OF_MORE), i++)
-    {
-	if(ptr -> GetType() != INTEGER_T)
-	{
-	    Node::ErrorReport(INDEX_TYPE_ERROR, id.c_str());
+        if((varSymbol -> type != INTEGER_T) && (varSymbol -> type != BOOL_T) && (varSymbol -> type != CLASS_T))
+        {
+            Node::ErrorReport(TYPE_ERROR, id.c_str());
 	    return false;
-	}
-	if(ptr -> GetChild(ExpressionList::INDEX_OF_EXPRESSION) != NULL && ptr -> GetChild(ExpressionList::INDEX_OF_EXPRESSION) -> IsEvaluable())
-	{
-	    int index = ptr -> GetChild(ExpressionList::INDEX_OF_EXPRESSION) -> GetIntValue();
-	    if(index > varSymbol -> dimensions[i].max || index < varSymbol -> dimensions[i].min)
-	    {
-		Node::ErrorReport(INDEX_RANGE_ERROR, index, id.c_str());
-		return false;
-	    }
-	}
-    }
-    */
-    if(ptr -> GetType() != INTEGER_T)
+        }    
+    } else 
     {
-        Node::ErrorReport(INDEX_TYPE_ERROR, id.c_str());
-	return false;
-    }
+    
+    }     
+    /*
     if(ptr -> GetChild(ExpressionList::INDEX_OF_EXPRESSION) != NULL && ptr -> GetChild(ExpressionList::INDEX_OF_EXPRESSION) -> IsEvaluable())
     {
         //a = 5
@@ -68,29 +50,20 @@ bool Variable::SemanticCheck()
             return false;
         }
     }
+    */
     return result;
 }
 bool Variable::Initialize()
 {
     bool result = UnaryNode::Initialize();
-    varSymbol = GetSymbol(id);
-    /*
-    if(varSymbol != NULL)
+    varSymbol = GetSymbol(id);  
+    if(varSymbol == NULL)
     {
-        Node* ptr = children[0];
-	int depth = Depth(ptr, ExpressionList::INDEX_OF_MORE);
-	if(depth < varSymbol -> dimensions.size())
-	    type = ARRAY_T;
-	else
-	    type = varSymbol->type;
-	return result;
-    }
-    else
-    {
-	Node::ErrorReport(UNDECLARED_VARIABLE_ERROR, id.c_str());
+        Node::ErrorReport(UNDECLARED_VARIABLE_ERROR, id.c_str());
 	return false;
     }
-    */
+    type = varSymbol -> type;
+    return result && true;    
 }
 bool Variable::IsAssignable()
 {

@@ -21,9 +21,10 @@ public:
     //int maxIndex;
     vector<Symbol*>* parameters;
     SymbolTable* variables;
-   
+    
+    string classId;
     int arraySize;
-    StructType* structType;
+    llvm::StructType* structType;
     
     SymbolTable* symbolTable;
     int declaredLine;

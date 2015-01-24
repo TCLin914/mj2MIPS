@@ -62,6 +62,7 @@ private:
     Value* Dereference(Value*);
     Type* GetArrayType(Symbol*);
     Type* ToLLVMType(Type_t);
+    Type* ToLLVMPointType(Type_t);
     LLVMContext context;
     Module* module;
     Function* currentFunction;
@@ -82,4 +83,5 @@ private:
     Constant* printRealArg;
     Constant* printStringArg;
     
+    void Outputs();
 };

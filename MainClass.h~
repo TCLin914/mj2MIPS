@@ -4,19 +4,17 @@
 
 using namespace std;
 
-class ClassDeclaration : public UnaryNode
+class MainClass : public UnaryNode
 {
 public:
-    ClassDeclaration(string, Node*); // (class name, MethodDeclaration)
+    MainClass(string, Node*);
     void SetSymbolTable(SymbolTable*, SymbolTable*);
     void Accept(Visitor*);
     bool SemanticCheck();
     bool Initialize();
-    
-    Symbol* GetClassSymbol();
+    Symbol* GetMainClassSymbol();
 private:
-    Symbol* classEntry;
+    Symbol* mainclassEntry;
     string id;
-    static const char MISSING_CLASS_ERROR[];
-};  
-
+    static const char MISSING_MAIN_CLASS_ERROR[];
+};

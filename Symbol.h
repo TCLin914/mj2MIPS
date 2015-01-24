@@ -21,7 +21,7 @@ public:
     //int maxIndex;
     vector<Symbol*>* parameters;
     SymbolTable* variables;
-   
+    
     int arraySize;
     llvm::StructType* structType;
     

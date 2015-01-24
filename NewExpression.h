@@ -11,8 +11,9 @@ public:
     void SetSymbolTable(SymbolTable*, SymbolTable*);
     void Accept(Visitor*);
     bool Initialize();
-    Symbol* GetClassSymbol();
+    Symbol* GetSymbol();
 private:
+    //Symbol* GetSymbol(string id);
     Symbol* classEntry;
     string id;
     static const char MISSING_CLASS_ERROR[];

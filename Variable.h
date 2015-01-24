@@ -23,6 +23,6 @@ private:
     static const int INDEX_OF_MORE_EXPRESSION_LIST = 1;
     static const char DIMENSION_ERROR[];
     static const char UNDECLARED_VARIABLE_ERROR[];
-    static const char INDEX_TYPE_ERROR[];
+    static const char TYPE_ERROR[];
     static const char INDEX_RANGE_ERROR[];
 };

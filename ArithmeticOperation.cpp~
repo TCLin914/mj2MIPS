@@ -33,7 +33,28 @@ bool ArithmeticOperation::locallySemanticCheck()
     {
         Node::ErrorReport(MISSING_OPERAND_ERROR);
 	return false;
-    }     
+    }
+     switch(children[0] -> GetType())
+        {
+            case INTEGER_T:
+            printf("%s\n", "INTEGER_T");
+            break;
+        case BOOL_T:
+         printf("%s\n", "BOOL_T");
+            break;
+        case VOID_T:
+         printf("%s\n", "VOID_T");
+            break;
+        case ARRAY_T:
+         printf("%s\n", "ARRAY_T");
+           break;
+        case CLASS_T:
+         printf("%s\n", "CLASS_T");
+           break;
+        default:
+            printf("Error occurs in TypeTToLLVMTyVisitChildrenpe(Type_t): invalid type\n");
+       }
+	
     // Check whether type of two operands is equal and the type is integer.
     if((children[0] -> GetType() != children[1] -> GetType()) || (children[0] -> GetType() != INTEGER_T))
     {
